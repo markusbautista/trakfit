@@ -13,3 +13,23 @@ def register(request):
 
 def resetPassword(request):
     return render(request, 'resetPassword.html')
+
+def forgot_password(request):
+    return render(request, 'forgot-password.html')
+
+def enter_code(request):
+    return render(request, 'enter-code.html')
+
+def teacher_dashboard(request):
+    return render(request, 'teacher-dashboard.html')
+
+def change_password(request):
+    return render(request, 'change-password.html')
+
+def student_management(request):
+    return render(request, 'student-management.html')
+
+def student_profile(request, student_id):
+    # In a real application, you would fetch the student data based on student_id
+    # For now, we'll just render the template with sample data
+    return render(request, 'student-profile.html')
