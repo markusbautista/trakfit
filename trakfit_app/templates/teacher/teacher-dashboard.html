@@ -10,9 +10,34 @@
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Custom Dashboard Styles -->
-    <style>
-        :root {
-            --primary-blue: #4A90A4;
+    <link rel="stylesheet" href="{% static 'css/teacher-dashboard.css' %}">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="brand-section">
+                <div class="brand-logo"></div>
+                <span class="brand-name">TrakFit</span>
+            </div>
+            
+            <div class="nav-menu">
+                <div class="nav-item">
+                    <a href="{% url 'teacher_dashboard' %}" class="nav-link active">Dashboard</a>
+                </div>
+                <div class="nav-item">
+                    <a href="{% url 'student_management' %}" class="nav-link">Student Management</a>
+                </div>
+                <div class="nav-item">
+                    <a href="#" class="nav-link">Settings</a>
+                </div>
+            </div>
+
+            <div class="sidebar-illustration"></div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
             --sidebar-blue: #5FA8D3;
             --light-blue: #B7D7EA;
             --card-bg: #FFFFFF;
@@ -800,7 +825,7 @@
                 grid-template-columns: 1fr;
             }
         }
-    </style>
+    -->
 </head>
 <body>
     <div class="dashboard-container">
