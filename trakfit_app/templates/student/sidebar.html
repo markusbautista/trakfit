@@ -1,235 +1,258 @@
 {% load static %}
 <!-- Student Sidebar Component -->
 <div class="sidebar">
-    <div class="sidebar-header">
-        <div class="d-flex align-items-center">
-            <div class="brand-logo me-3"></div>
-            <div class="text-white">
-                <div class="h1 mb-0">TrakFit</div>
-            </div>
-        </div>
-    </div>
+  <div class="brand-section">
+    <div class="brand-logo"></div>
+    <span class="brand-name">TrakFit</span>
+  </div>
 
-    <nav class="nav flex-column mt-4 sidebar-nav">
-        <div class="nav-item {% if request.resolver_match.url_name == 'student-dashboard' %}active{% endif %}">
-            <a class="nav-link" href="{% url 'student-dashboard' %}">Progress Dashboard</a>
-        </div>
-        <div class="nav-item {% if request.resolver_match.url_name == 'student-profile' %}active{% endif %}">
-            <a class="nav-link" href="{% url 'student-profile' %}">My Profile</a>
-        </div>
-        <div class="nav-item {% if request.resolver_match.url_name == 'student-profile-update' %}active{% endif %}">
-            <a class="nav-link" href="{% url 'student-profile-update' %}">Update Profile</a>
-        </div>
-        <div class="nav-item {% if request.resolver_match.url_name == 'student-settings' %}active{% endif %}">
-            <a class="nav-link" href="{% url 'student-settings' %}">Settings</a>
-        </div>
-        <div class="nav-item">
-            <a class="nav-link" href="{% url 'login' %}">Logout</a>
-        </div>
-    </nav>
-
-    <div class="sidebar-illustration text-center">
-        <img src="{% static 'decor.png' %}" alt="Fitness Illustration" class="img-fluid" style="max-width: 300px;">
+  <div class="nav-menu">
+    <div
+      class="nav-item {% if request.resolver_match.url_name == 'student-dashboard' %}active{% endif %}"
+    >
+      <a class="nav-link" href="{% url 'student-dashboard' %}"
+        >Progress Dashboard</a
+      >
     </div>
+    <div
+      class="nav-item {% if request.resolver_match.url_name == 'student-profile' %}active{% endif %}"
+    >
+      <a class="nav-link" href="{% url 'student-profile' %}">My Profile</a>
+    </div>
+    <div
+      class="nav-item {% if request.resolver_match.url_name == 'student-profile-update' %}active{% endif %}"
+    >
+      <a class="nav-link" href="{% url 'student-profile-update' %}"
+        >Update Profile</a
+      >
+    </div>
+    <div
+      class="nav-item {% if request.resolver_match.url_name == 'student-settings' %}active{% endif %}"
+    >
+      <a class="nav-link" href="{% url 'student-settings' %}">Settings</a>
+    </div>
+    <div class="nav-item">
+      <a class="nav-link" href="{% url 'login' %}">Logout</a>
+    </div>
+  </div>
+
+  <div class="sidebar-illustration">
+    <img src="{% static 'decor.png' %}" alt="Fitness Illustration" />
+  </div>
 </div>
 
 <style>
-    :root {
-        --primary-color: #3A7CA5;
-        --light-blue: #9EC5E5;
-        --dark-text: #2C3E50;
-        --light-bg: #FAFAFA;
-        --input-bg: #F3F3F3;
-    }
+  :root {
+    --primary-color: #3a7ca5;
+    --light-blue: #9ec5e5;
+    --dark-text: #2c3e50;
+    --light-bg: #fafafa;
+    --input-bg: #f3f3f3;
+  }
 
+  .sidebar {
+    background-color: var(--primary-color);
+    width: 250px;
+    position: fixed;
+    height: 100vh;
+    overflow-y: auto;
+    left: 0;
+    top: 0;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: 2rem 0;
+  }
+
+  .brand-section {
+    display: flex;
+    align-items: center;
+    padding: 0 2rem;
+    margin-bottom: 3rem;
+  }
+
+  .brand-logo {
+    width: 65px;
+    height: 65px;
+    background: white;
+    border-radius: 50%;
+    margin-right: 1rem;
+  }
+
+  .brand-name {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: white;
+  }
+
+  .nav-menu {
+    padding: 0 1rem;
+    flex-shrink: 0;
+  }
+
+  .nav-item {
+    margin-bottom: 0.5rem;
+  }
+
+  .nav-link {
+    display: block;
+    padding: 1rem 1rem;
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    font-weight: 500;
+  }
+
+  .nav-link:hover,
+  .nav-item.active .nav-link {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    transform: translateX(5px);
+    border-radius: 30px;
+  }
+
+  .sidebar-illustration {
+    position: absolute;
+    left: 50%;
+    bottom: 20px;
+    transform: translateX(-50%);
+    width: 200px;
+    opacity: 0.9;
+  }
+
+  .sidebar-illustration img {
+    width: 100%;
+    max-width: 200px;
+  }
+
+  .main-content {
+    margin-left: 250px;
+    padding: 20px;
+    min-height: 100vh;
+  }
+
+  .brand-font {
+    font-family: "Albert Sans", sans-serif;
+  }
+
+  @media (max-width: 1400px) {
     .sidebar {
-        background-color: var(--primary-color);
-        min-height: 100vh;
-        width: 400px;
-        position: fixed;
-        left: 0;
-        top: 0;
-        z-index: 1000;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        padding-bottom: 40px;
+      width: 250px;
     }
-
-    .sidebar-header {
-        padding: 20px;
-    }
-
-    .sidebar-nav {
-        flex: 1;
-        padding: 0 20px;
-    }
-
-    .sidebar-illustration {
-        padding: 20px;
-        min-height: 200px;
-    }
-
     .main-content {
-        margin-left: 400px;
-        padding: 20px;
-        min-height: 100vh;
+      margin-left: 250px;
     }
+  }
 
-    .brand-font {
-        font-family: 'Albert Sans', sans-serif;
+  @media (max-width: 1200px) {
+    .sidebar {
+      width: 300px;
     }
-
-    .nav-item {
-        padding: 15px 0;
-        margin: 5px 0;
-        border-radius: 50px;
-        transition: all 0.3s ease;
-    }
-
-    .nav-item.active {
-        background-color: rgba(158, 197, 229, 0.50);
-    }
-
-    .nav-item:hover {
-        background-color: rgba(158, 197, 229, 0.30);
+    .main-content {
+      margin-left: 300px;
     }
 
     .nav-link {
-        color: #FAFAFA !important;
-        font-size: 1.4rem;
-        font-weight: 400;
-        padding-left: 44px !important;
-        text-decoration: none;
+      font-size: 1.2rem;
+      padding-left: 30px !important;
+    }
+  }
+
+  @media (max-width: 992px) {
+    .sidebar {
+      padding-bottom: 150px;
+      position: relative;
+      height: auto;
+      width: 100%;
     }
 
-    .nav-item.active .nav-link {
-        font-weight: 700;
+    .sidebar-illustration img {
+      max-width: 200px !important;
+    }
+
+    .main-content {
+      margin-left: 0;
+    }
+
+    .nav-item {
+      display: inline-block;
+      margin: 5px 10px;
+      padding: 10px 20px;
+    }
+
+    .nav-link {
+      padding-left: 0 !important;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .sidebar-header {
+      padding: 15px;
     }
 
     .brand-logo {
-        width: 100px;
-        height: 100px;
-        background-color: #D9D9D9;
-        border-radius: 50%;
+      width: 80px;
+      height: 80px;
     }
 
-    @media (max-width: 1400px) {
-        .sidebar {
-            width: 350px;
-        }
-        .main-content {
-            margin-left: 350px;
-        }
+    .sidebar .h1 {
+      font-size: 1.8rem;
     }
 
-    @media (max-width: 1200px) {
-        .sidebar {
-            width: 300px;
-        }
-        .main-content {
-            margin-left: 300px;
-        }
+    .nav-link {
+      font-size: 1.1rem;
+    }
+  }
 
-        .nav-link {
-            font-size: 1.2rem;
-            padding-left: 30px !important;
-        }
+  @media (max-width: 576px) {
+    .sidebar {
+      padding-bottom: 120px;
     }
 
-    @media (max-width: 992px) {
-        .sidebar {
-            padding-bottom: 150px;
-            position: relative;
-            height: auto;
-            width: 100%;
-        }
-
-        .sidebar-illustration img {
-            max-width: 200px !important;
-        }
-
-        .main-content {
-            margin-left: 0;
-        }
-
-        .nav-item {
-            display: inline-block;
-            margin: 5px 10px;
-            padding: 10px 20px;
-        }
-
-        .nav-link {
-            padding-left: 0 !important;
-        }
+    .sidebar-header {
+      padding: 10px;
     }
 
-    @media (max-width: 768px) {
-        .sidebar-header {
-            padding: 15px;
-        }
-
-        .brand-logo {
-            width: 80px;
-            height: 80px;
-        }
-
-        .sidebar .h1 {
-            font-size: 1.8rem;
-        }
-
-        .nav-link {
-            font-size: 1.1rem;
-        }
+    .brand-logo {
+      width: 60px;
+      height: 60px;
     }
 
-    @media (max-width: 576px) {
-        .sidebar {
-            padding-bottom: 120px;
-        }
-
-        .sidebar-header {
-            padding: 10px;
-        }
-
-        .brand-logo {
-            width: 60px;
-            height: 60px;
-        }
-
-        .sidebar .h1 {
-            font-size: 1.5rem;
-        }
-
-        .nav-item {
-            margin: 3px 5px;
-            padding: 8px 15px;
-        }
-
-        .nav-link {
-            font-size: 1rem;
-        }
-
-        .sidebar-illustration {
-            padding: 15px;
-        }
-
-        .sidebar-illustration img {
-            max-width: 150px !important;
-        }
+    .sidebar .h1 {
+      font-size: 1.5rem;
     }
+
+    .nav-item {
+      margin: 3px 5px;
+      padding: 8px 15px;
+    }
+
+    .nav-link {
+      font-size: 1rem;
+    }
+
+    .sidebar-illustration {
+      padding: 15px;
+    }
+
+    .sidebar-illustration img {
+      max-width: 150px !important;
+    }
+  }
 </style>
 
 <script>
-    // Navigation active state handling
-    document.addEventListener('DOMContentLoaded', function() {
-        const navItems = document.querySelectorAll('.nav-item');
+  // Navigation active state handling
+  document.addEventListener("DOMContentLoaded", function () {
+    const navItems = document.querySelectorAll(".nav-item");
 
-        navItems.forEach(item => {
-            item.addEventListener('click', function() {
-                navItems.forEach(nav => nav.classList.remove('active'));
-                this.classList.add('active');
-            });
-        });
+    navItems.forEach((item) => {
+      item.addEventListener("click", function () {
+        navItems.forEach((nav) => nav.classList.remove("active"));
+        this.classList.add("active");
+      });
     });
+  });
 </script>
