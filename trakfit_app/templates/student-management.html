@@ -233,6 +233,7 @@
         .right-controls {
             display: flex;
             align-items: center;
+            justify-content: end;
             gap: 1rem;
         }
 
@@ -405,16 +406,16 @@
             <!-- Controls Section -->
             <div class="controls-section">
 
-                <div class="controls-row">
-                    <div class="left-controls">
+                <!-- <div class="controls-row"> -->
+                    <!-- <div class="left-controls">
                         <label style="display: flex; align-items: center; justify-content: center; gap: 1rem">
                             <input type="checkbox" class="student-checkbox" id="select-all">
                         </label>
                         <i class="fa-solid fa-angle-down"></i>
                         <label>Select All</label>
-                    </div>
+                    </div> -->
                     <div class="right-controls">
-                        <a href="#" class="control-btn" style="background-color: #FAFAFA; border: none">
+                        <!-- <a href="#" class="control-btn" style="background-color: #FAFAFA; border: none">
                             <i class="fas fa-chart-bar"></i>
                             Generate Report
                         </a>
@@ -428,7 +429,6 @@
                         <label>
                             |
                         </label>
-                        <!-- Optional yung flip ng pages -->
                         <span class="pagination-info">1-50 of 150</span>
                         <div style="display: flex; gap: 0.25rem;">
                             <button class="control-btn" style="padding: 0.5rem; border-radius: 50px; background-color: #EBEBEB; margin: 0 0.5rem">
@@ -437,14 +437,14 @@
                             <button class="control-btn" style="padding: 0.5rem; border-radius: 50px; background-color: #EBEBEB">
                                 <i class="fas fa-chevron-right"></i>
                             </button>
-                        </div>
+                        </div> -->
                         <div class="search-container">
                             <i class="fas fa-search search-icon"></i>
                             <input type="text" class="search-input" placeholder="Search">
                         </div>
                     </div>
 
-                </div>
+                <!-- </div> -->
             </div>
 
             <!-- Student Table -->
@@ -452,8 +452,6 @@
                 <table class="student-table">
                     <thead>
                         <tr>
-                            <th style="width: 20px;">
-                            </th>
                             <th style="width: 20px;"></th>
                             <th style="text-align: left">Name</th>
                             <th style="width: 50px; text-align: center;">Age</th>
