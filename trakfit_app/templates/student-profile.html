@@ -1,4 +1,4 @@
-{% load static %}
+﻿{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,34 +8,37 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    {% load static %}
     
     <style>
         :root {
             --primary-blue: #4A90A4;
             --sidebar-blue: #3A7CA5;
-            --light-blue: #9EC5E5;
+            --light-blue: #C1DBF0;
             --card-bg: #FFFFFF;
             --text-dark: #2C3E50;
             --text-light: #7F8C8D;
             --border-color: #E5E7EB;
         }
 
-        body {
+        html, body {
             margin: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #FAFAFA;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
         }
 
         .dashboard-container {
             display: flex;
-            min-height: 100vh;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
         }
 
-        /* Sidebar Styles */
         .sidebar {
             width: 250px;
-            background: var(--sidebar-blue) 100%;
+            background: var(--sidebar-blue);
             color: white;
             padding: 2rem 0;
             position: fixed;
@@ -50,7 +53,6 @@
             margin-bottom: 3rem;
         }
 
-        /* TrakFit logo */
         .brand-logo {
             width: 65px;
             height: 65px;
@@ -96,21 +98,20 @@
             transform: translateX(-50%);
             width: 250px;
             height: 100px;
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
-            opacity: 0.9;
         }
 
-        .sidebar-illustration img{
+        .sidebar-illustration img {
             width: 250px;
         }
 
-        /* Main Content */
         .main-content {
             flex: 1;
             margin-left: 250px;
             padding: 1.5rem;
+            height: 100vh;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
         }
 
         .top-bar {
@@ -118,6 +119,7 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 1.5rem;
+            flex-shrink: 0;
         }
 
         .page-title-section {
@@ -127,8 +129,8 @@
         }
 
         .back-button {
-            width: 40px;
-            height: 40px;
+            width: clamp(35px, 2.5vw, 40px);
+            height: clamp(35px, 2.5vw, 40px);
             border: none;
             background: #EBEBEB;
             border-radius: 50px;
@@ -146,7 +148,7 @@
         }
 
         .page-title {
-            font-size: 3rem;
+            font-size: clamp(1.5rem, 3vw, 3rem);
             color: #2C3E50;
             margin: 0;
         }
@@ -158,27 +160,25 @@
         }
 
         .notification-icon {
-            width: 40px;
-            height: 40px;
+            width: clamp(30px, 2.5vw, 40px);
+            height: clamp(30px, 2.5vw, 40px);
             background: #F8F9FA;
             border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: var(--text-light);
-            font-size: 1.2rem;
+            font-size: clamp(1rem, 1.2vw, 1.2rem);
         }
 
         .user-avatar {
-            width: 60px;
-            height: 60px;
+            width: clamp(40px, 3.5vw, 60px);
+            height: clamp(40px, 3.5vw, 60px);
             background: #D9D9D9;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
-            font-weight: 600;
             overflow: hidden;
             cursor: pointer;
         }
@@ -187,23 +187,71 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            border-radius: 50%;
+        }
+
+        .tab-navigation {
+            display: flex;
+            gap: 2rem;
+            border-bottom: 2px solid #E5E7EB;
+            margin-bottom: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .tab {
+            padding: 0.75rem 1rem;
+            font-size: clamp(0.9rem, 1.1vw, 1.1rem);
+            font-weight: 600;
+            color: var(--text-light);
+            cursor: pointer;
+            border: none;
+            background: none;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            color: var(--text-dark);
+            border-bottom-color: var(--text-dark);
+        }
+
+        .tab:hover {
+            color: var(--text-dark);
+        }
+
+        .tab-content {
+            display: none;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .tab-content.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .profile-overview-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            flex: 1;
+            height: 100%;
+            overflow: hidden;
         }
 
         /* Student Info Card */
         .student-info-card {
             background: linear-gradient(135deg, var(--light-blue), #E3F2FD);
             border-radius: 30px;
-            padding: 1rem 3rem;
-            margin-bottom: 1.5rem;
+            padding: 1rem 2rem;
             display: flex;
             align-items: center;
             gap: 1.5rem;
+            flex-shrink: 0;
         }
 
         .student-avatar-large {
-            width: 80px;
-            height: 80px;
+            width: clamp(50px, 4vw, 70px);
+            height: clamp(50px, 4vw, 70px);
             border-radius: 50%;
             background: #D1D5DB;
             flex-shrink: 0;
@@ -222,146 +270,314 @@
             font-weight: 700;
             color: var(--text-dark);
             margin: 0;
+            font-size: clamp(1rem, 1.5vw, 1.8rem);
         }
 
         .student-section {
             color: var(--text-dark);
-            font-size: 1.2rem;
+            font-size: clamp(0.8rem, 1vw, 1.1rem);
             font-weight: 500;
             margin: 0;
         }
 
         .student-info-grid {
-            display: flex;
-            gap: 3rem;
-            margin-top: 0.5rem;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
         }
 
         .info-item {
             display: flex;
             flex-direction: column;
+            gap: 0.15rem;
         }
 
         .info-label {
-            font-size: 1.2rem;
+            font-size: clamp(0.75rem, 0.9vw, 0.95rem);
             color: var(--text-dark);
-            margin: 0;
-            font-weight: 500;
+            font-weight: 600;
         }
 
         .info-value {
-            font-size: 0.9rem;
-            font-weight: 600;
+            font-size: clamp(0.7rem, 0.85vw, 0.9rem);
             color: var(--text-dark);
         }
 
-        /* Fitness Data Table */
-        .fitness-table-container {
-            background: var(--card-bg);
-            border-radius: 16px;
-            overflow: hidden;
-            margin-bottom: 2rem;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-        }
-
-        .fitness-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .fitness-table thead {
-            background: linear-gradient(135deg, var(--light-blue), #E3F2FD);
-        }
-
-        .fitness-table th {
-            padding: 1rem 1rem;
-            text-align: center;
-            font-weight: 600;
-            color: var(--text-dark);
-            font-size: 1.2rem;
-        }
-
-        .fitness-table td {
-            padding: 0.7rem 0;
-            text-align: center;
-            border-bottom: 1px solid #F0F0F0;
-            vertical-align: middle;
-            font-weight: 500;
-            font-size: 1rem;
-        }
-
-
-        .component-name {
-            text-align: center;
-            font-weight: 600;
-            color: var(--text-dark);
-        }
-
-        .change-positive {
-            color: #10B981;
-            font-weight: 600;
-        }
-
-        .change-negative {
-            color: #EF4444;
-            font-weight: 600;
-        }
-
-        /* Chart Container */
         .chart-container {
             background: var(--card-bg);
-            border-radius: 16px;
-            padding: 2rem;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 5px rgba(0, 0, 0, 0.2);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            overflow: hidden;
         }
 
         .chart-title {
             text-align: center;
-            font-size: 1.1rem;
+            font-size: clamp(0.9rem, 1.1vw, 1.2rem);
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 1rem;
+            flex-shrink: 0;
+        }
+
+        .chart-canvas {
+            position: relative;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .test-history-container {
+            display: grid;
+            grid-template-columns: 220px 1fr;
+            gap: 1.5rem;
+            height: 100%;
+        }
+
+        .test-list {
+            background: transparent;
+            border-radius: 0;
+            padding: 0;
+            box-shadow: none;
+            overflow-y: auto;
+        }
+
+        .test-list-title {
+            font-size: clamp(1rem, 1.2vw, 1.2rem);
             font-weight: 600;
             color: var(--text-dark);
             margin-bottom: 1.5rem;
         }
 
-        .chart-canvas {
+        .test-item {
+            background: var(--light-blue);
+            border-radius: 12px;
+            padding: 1.25rem 1.5rem;
+            margin-bottom: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
             position: relative;
-            height: 400px;
-        }
-
-        .chart-grid {
             display: flex;
             justify-content: space-between;
-            gap: 1rem;
-            flex-wrap: nowrap;
-            overflow-x: auto;
-            margin-top: 1.5rem;
-            padding-bottom: 1rem;
-        }
-
-        .chart-card {
-            flex: 1;
-            min-width: 160px;
-            max-width: 220px;
-            background: #FFFFFF;
-            border-radius: 20px;
-            padding: 1rem;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-            display: flex;
-            flex-direction: column;
             align-items: center;
         }
 
-        .chart-card canvas {
-            width: 100% !important;
-            height: 20vh !important;
+        .test-item:hover {
+            background: #87B9D1;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
-        .chart-label {
-            font-size: 0.9rem;
+        .test-item.active {
+            background: var(--primary-blue);
+        }
+
+        .test-item.active .test-type,
+        .test-item.active .test-date {
+            color: white;
+        }
+
+        .test-item-content {
+            flex: 1;
+        }
+
+        .test-type {
+            font-weight: 700;
+            color: var(--text-dark);
+            font-size: clamp(0.95rem, 1.05vw, 1.05rem);
+            margin-bottom: 0.25rem;
+        }
+
+        .test-date {
+            font-size: clamp(0.75rem, 0.85vw, 0.85rem);
+            color: var(--text-dark);
+            font-weight: 500;
+        }
+
+        .view-button {
+            background: white;
+            color: var(--primary-blue);
+            border: none;
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: clamp(0.75rem, 0.85vw, 0.85rem);
             font-weight: 600;
-            color: #2C3E50;
-            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .test-item.active .view-button {
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .view-button:hover {
+            background: rgba(255, 255, 255, 1);
+            transform: scale(1.05);
+        }
+
+        .test-details-panel {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+        }
+
+        .test-details-panel.has-content {
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            justify-content: flex-start;
+            overflow: hidden;
+            padding: 2rem;
+        }
+
+        .test-details-content {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            gap: 1.5rem;
+        }
+
+        .table-wrapper {
+            flex: 1;
+            overflow-y: auto;
+            min-height: 0;
+        }
+
+        .empty-state {
             text-align: center;
+            color: var(--text-light);
+        }
+
+        .empty-state-text {
+            font-size: clamp(1rem, 1.2vw, 1.2rem);
+            color: var(--text-light);
+        }
+
+        .test-details-title {
+            font-size: clamp(1.1rem, 1.3vw, 1.3rem);
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 1rem;
+            flex-shrink: 0;
+        }
+
+        .test-results-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-bottom: 0;
+            border: 1px solid #E5E7EB;
+            border-radius: 12px;
+            overflow: hidden;
+            height: 100%;
+        }
+
+        .test-results-table th {
+            background: #F5F4F5;
+            padding: 0.75rem 1.5rem;
+            text-align: center;
+            font-weight: 600;
+            color: var(--text-dark);
+            font-size: clamp(0.8rem, 0.9vw, 0.9rem);
+            border-bottom: 1px solid #E5E7EB;
+        }
+
+        .test-results-table th:first-child {
+            border-top-left-radius: 12px;
+        }
+
+        .test-results-table th:last-child {
+            border-top-right-radius: 12px;
+        }
+
+        .test-results-table tbody tr:last-child td:first-child {
+            border-bottom-left-radius: 12px;
+        }
+
+        .test-results-table tbody tr:last-child td:last-child {
+            border-bottom-right-radius: 12px;
+        }
+
+        .test-results-table td {
+            padding: 0.65rem 1.5rem;
+            border-bottom: 1px solid #E5E7EB;
+            font-size: clamp(0.8rem, 0.9vw, 0.9rem);
+            color: var(--text-dark);
+            background: white;
+            text-align: center;
+        }
+
+        .test-results-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .component-name {
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+
+        .remarks-section {
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .remarks-title {
+            font-size: clamp(0.95rem, 1.1vw, 1.1rem);
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 0.75rem;
+            flex-shrink: 0;
+        }
+
+        .remarks-textarea {
+            width: 100%;
+            height: 90px;
+            padding: 0.75rem;
+            border: 1px solid #E5E7EB;
+            border-radius: 8px;
+            font-size: clamp(0.75rem, 0.85vw, 0.85rem);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            resize: none;
+            background: white;
+            flex-shrink: 0;
+        }
+
+        .remarks-textarea:focus {
+            outline: none;
+            border-color: #D1D5DB;
+        }
+
+        .remarks-textarea::placeholder {
+            color: #9CA3AF;
+        }
+
+        .submit-button {
+            background: var(--light-blue);
+            color: var(--text-dark);
+            border: none;
+            padding: 0.4rem 1.2rem;
+            border-radius: 15px;
+            font-size: clamp(0.8rem, 0.9vw, 0.9rem);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            align-self: flex-end;
+            margin-top: 0.5rem;
+        }
+
+        .submit-button:hover {
+            background: #87B9D1;
         }
 
         @media (max-width: 768px) {
@@ -380,14 +596,16 @@
 
             .student-info-grid {
                 grid-template-columns: 1fr;
-                gap: 1rem;
+            }
+
+            .test-history-container {
+                grid-template-columns: 1fr;
             }
         }
     </style>
 </head>
 <body>
     <div class="dashboard-container">
-        <!-- Sidebar -->
         <div class="sidebar">
             <div class="brand-section">
                 <div class="brand-logo"></div>
@@ -407,13 +625,11 @@
             </div>
 
             <div class="sidebar-illustration">
-                <img src="{% static 'sidebar.png' %}">
+                <img src="{% static 'sidebar.png' %}" alt="Sidebar">
             </div>
         </div>
 
-        <!-- Main Content -->
         <div class="main-content">
-            <!-- Top Bar -->
             <div class="top-bar">
                 <div class="page-title-section">
                     <button class="back-button" onclick="history.back()">
@@ -423,7 +639,7 @@
                 </div>
                 <div class="user-section">
                     <div class="notification-icon">
-                        <i class="fa-regular fa-bell" style="font-size: 2rem; padding-right: 1rem"></i>
+                        <i class="fa-regular fa-bell"></i>
                     </div>
                     <div class="user-avatar">
                         <img src="{% static 'profile.png' %}" alt="Profile" class="profile-image">
@@ -431,190 +647,212 @@
                 </div>
             </div>
 
-            <!-- Student Info Card -->
-            <div class="student-info-card">
-                <div class="student-avatar-large"></div>
-                <div class="student-details">
-                    <div class="cell">
-                        <h2 class="student-name">Juan Dela Cruz</h2>
-                        <div class="student-section">BSIT 1A-G1</div>
-                    </div>
-                    <div class="cell">
-                        <div class="info-item">
-                            <span class="info-label">Age: 21</span>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">Gender: Male</span>
-                        </div>
-                    </div>
-                    <div class="cell">
-                        <div class="info-item">
-                            <span class="info-label">Contact No.: 09123456789</span>
-                        </div>
-                        <div class="info-item" style="margin-top: 0.25rem;">
-                            <span class="info-label">Email: juandelacruz@gmail.com</span>
+            <div class="tab-navigation">
+                <button class="tab active" onclick="switchTab('profile-overview')">Profile Overview</button>
+                <button class="tab" onclick="switchTab('test-history')">Test History</button>
+            </div>
+
+            <div id="profile-overview" class="tab-content active">
+                <div class="profile-overview-container">
+                    <div class="student-info-card">
+                        <div class="student-avatar-large"></div>
+                        <div class="student-details">
+                            <div class="cell">
+                                <h2 class="student-name">Juan Dela Cruz</h2>
+                                <div class="student-section">BSIT 1A-G1</div>
+                            </div>
+                            <div class="cell">
+                                <div class="info-item">
+                                    <span class="info-label">Age: 21</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Gender: Male</span>
+                                </div>
+                            </div>
+                            <div class="cell">
+                                <div class="info-item">
+                                    <span class="info-label">Contact No.: 09123456789</span>
+                                </div>
+                                <div class="info-item" style="margin-top: 0.25rem;">
+                                    <span class="info-label">Email: juandelacruz@gmail.com</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
+                    <div class="chart-container">
+                        <h3 class="chart-title">Fitness Component Comparison</h3>
+                        <div class="chart-canvas">
+                            <canvas id="fitnessComparisonChart"></canvas>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Fitness Data Table -->
-            <div class="fitness-table-container">
-                <table class="fitness-table">
-                    <thead>
-                        <tr>
-                            <th style="text-align: center;">Fitness Component</th>
-                            <th>Pre-Test Value</th>
-                            <th>Pre-Test Date</th>
-                            <th>Post-Test Value</th>
-                            <th>Post-Test Date</th>
-                            <th>Change</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td class="component-name">Body Mass Index (BMI)</td>
-                            <td>24.5</td>
-                            <td>08/15/2025</td>
-                            <td>24.2</td>
-                            <td>11/05/2025</td>
-                            <td class="change-negative">-0.3</td>
-                        </tr>
-                        <tr>
-                            <td class="component-name">VO₂ Max</td>
-                            <td>42.5 mL/kg/min</td>
-                            <td>08/15/2025</td>
-                            <td>46.1 mL/kg/min</td>
-                            <td>11/05/2025</td>
-                            <td class="change-positive">+3.6</td>
-                        </tr>
-                        <tr>
-                            <td class="component-name">Flexibility</td>
-                            <td>12 cm</td>
-                            <td>08/15/2025</td>
-                            <td>15 cm</td>
-                            <td>11/05/2025</td>
-                            <td class="change-positive">+3 cm</td>
-                        </tr>
-                        <tr>
-                            <td class="component-name">Strength</td>
-                            <td>25 (Push-ups)</td>
-                            <td>08/15/2025</td>
-                            <td>35 (Push-ups)</td>
-                            <td>11/05/2025</td>
-                            <td class="change-positive">+10</td>
-                        </tr>
-                        <tr>
-                            <td class="component-name">Agility</td>
-                            <td>17.8 sec</td>
-                            <td>08/15/2025</td>
-                            <td>16.9 sec</td>
-                            <td>11/05/2025</td>
-                            <td class="change-positive">-0.9 sec</td>
-                        </tr>
-                        <tr>
-                            <td class="component-name">Speed</td>
-                            <td>5.9 sec</td>
-                            <td>08/15/2025</td>
-                            <td>5.6 sec</td>
-                            <td>11/05/2025</td>
-                            <td class="change-positive">-0.3 sec</td>
-                        </tr>
-                        <tr>
-                            <td class="component-name">Endurance</td>
-                            <td>12:30 min</td>
-                            <td>08/15/2025</td>
-                            <td>11:15 min</td>
-                            <td>11/05/2025</td>
-                            <td class="change-positive">-1:15 min</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+            <div id="test-history" class="tab-content">
+                <div class="test-history-container">
+                    <div class="test-list">
+                        <h3 class="test-list-title">Test Records</h3>
+                        <div class="test-item" onclick="showTestDetails('pre-test', event)">
+                            <div class="test-item-content">
+                                <div class="test-type">Pre-Test</div>
+                                <div class="test-date">August 15, 2025</div>
+                            </div>
+                            <button class="view-button">View</button>
+                        </div>
+                        <div class="test-item" onclick="showTestDetails('post-test', event)">
+                            <div class="test-item-content">
+                                <div class="test-type">Post-Test</div>
+                                <div class="test-date">August 15, 2025</div>
+                            </div>
+                            <button class="view-button">View</button>
+                        </div>
+                    </div>
 
-            <!-- Chart Grid -->
-                <div class="chart-grid">
-                    <div class="chart-card">
-                        <h6 class="chart-label">Body Mass Index</h6>
-                        <canvas id="bmiChart"></canvas>
-                    </div>
-                    <div class="chart-card">
-                        <h6 class="chart-label">VO₂ Max</h6>
-                        <canvas id="vo2Chart"></canvas>
-                    </div>
-                    <div class="chart-card">
-                        <h6 class="chart-label">Flexibility</h6>
-                        <canvas id="flexibilityChart"></canvas>
-                    </div>
-                    <div class="chart-card">
-                        <h6 class="chart-label">Strength</h6>
-                        <canvas id="strengthChart"></canvas>
-                    </div>
-                    <div class="chart-card">
-                        <h6 class="chart-label">Agility</h6>
-                        <canvas id="agilityChart"></canvas>
-                    </div>
-                    <div class="chart-card">
-                        <h6 class="chart-label">Speed</h6>
-                        <canvas id="speedChart"></canvas>
-                    </div>
-                    <div class="chart-card">
-                        <h6 class="chart-label">Endurance</h6>
-                        <canvas id="enduranceChart"></canvas>
+                    <div class="test-details-panel" id="test-details-panel">
+                        <div class="empty-state">
+                            <p class="empty-state-text">Select a test to view details</p>
+                        </div>
                     </div>
                 </div>
+            </div>
         </div>
     </div>
 
-    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     
     <script>
-        // Utility function for small charts
-        function createMiniChart(ctx, preValue, postValue) {
-            return new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: ['Pre-Test', 'Post-Test'],
-                    datasets: [{
-                        data: [preValue, postValue],
-                        backgroundColor: ['#4A90A4', '#1F2937'],
-                        maxBarThickness: 25
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: { enabled: false }
-                    },
-                    scales: {
-                        x: {
-                            grid: { display: false },
-                            ticks: { font: { size: 10 } }
-                        },
-                        y: {
-                            beginAtZero: true,
-                            grid: { color: '#2C3E5033' },
-                            ticks: { display: false }
-                        }
-                    }
-                }
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
             });
+
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
         }
 
-        // Chart data from your table
-        createMiniChart(document.getElementById('bmiChart'), 24.5, 24.2);
-        createMiniChart(document.getElementById('vo2Chart'), 42.5, 46.1);
-        createMiniChart(document.getElementById('flexibilityChart'), 12, 15);
-        createMiniChart(document.getElementById('strengthChart'), 25, 35);
-        createMiniChart(document.getElementById('agilityChart'), 17.8, 16.9);
-        createMiniChart(document.getElementById('speedChart'), 5.9, 5.6);
-        createMiniChart(document.getElementById('enduranceChart'), 12.5, 11.25);
-        // Student Fitness Chart
-        const ctx = document.getElementById('studentFitnessChart').getContext('2d');
+        function showTestDetails(testType, event) {
+            // Remove active class from all test items
+            document.querySelectorAll('.test-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Add active class to clicked item
+            event.currentTarget.classList.add('active');
+
+            const panel = document.getElementById('test-details-panel');
+            panel.classList.add('has-content');
+
+            if (testType === 'pre-test') {
+                panel.innerHTML = `
+                    <div class="test-details-content">
+                        <h2 class="test-details-title">Pre-Test Results</h2>
+                        <div class="table-wrapper">
+                            <table class="test-results-table">
+                                <thead>
+                                    <tr>
+                                        <th>Fitness Component</th>
+                                        <th>Value</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="component-name">Body Mass Index (BMI)</td>
+                                        <td>24.5</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="component-name">VO<sub>2</sub> Max</td>
+                                        <td>42.5 mL/kg/min</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="component-name">Flexibility</td>
+                                        <td>12 cm</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="component-name">Strength</td>
+                                        <td>25 push-ups</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="component-name">Agility</td>
+                                        <td>17.8 sec</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="component-name">Speed</td>
+                                        <td>5.9 sec</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="component-name">Endurance</td>
+                                        <td>12:30 min</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="remarks-section">
+                            <h3 class="remarks-title">Remarks</h3>
+                            <textarea class="remarks-textarea" placeholder="Enter your remarks...">Student shows good baseline fitness levels. Focus on improving flexibility and endurance in the coming semester.</textarea>
+                            <button class="submit-button">Submit</button>
+                        </div>
+                    </div>
+                `;
+            } else if (testType === 'post-test') {
+                panel.innerHTML = `
+                    <div class="test-details-content">
+                        <h2 class="test-details-title">Post-Test Results</h2>
+                        <div class="table-wrapper">
+                            <table class="test-results-table">
+                                <thead>
+                                    <tr>
+                                        <th>Fitness Component</th>
+                                        <th>Value</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="component-name">Body Mass Index (BMI)</td>
+                                        <td>24.2</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="component-name">VO<sub>2</sub> Max</td>
+                                        <td>46.1 mL/kg/min</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="component-name">Flexibility</td>
+                                        <td>15 cm</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="component-name">Strength</td>
+                                        <td>35 push-ups</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="component-name">Agility</td>
+                                        <td>16.9 sec</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="component-name">Speed</td>
+                                        <td>5.6 sec</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="component-name">Endurance</td>
+                                        <td>11:15 min</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="remarks-section">
+                            <h3 class="remarks-title">Remarks</h3>
+                            <textarea class="remarks-textarea" placeholder="Enter your remarks...">Excellent improvement across all fitness components! Student has shown great dedication and progress. Continue current training regimen.</textarea>
+                            <button class="submit-button">Submit</button>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        const ctx = document.getElementById('fitnessComparisonChart').getContext('2d');
         new Chart(ctx, {
             type: 'bar',
             data: {
@@ -623,14 +861,12 @@
                     label: 'Pre-Test',
                     data: [24.5, 42.5, 12, 25, 17.8, 5.9, 12.5],
                     backgroundColor: '#4A90A4',
-                    borderRadius: 4,
-                    maxBarThickness: 40
+                    borderRadius: 4
                 }, {
                     label: 'Post-Test',
                     data: [24.2, 46.1, 15, 35, 16.9, 5.6, 11.25],
-                    backgroundColor: '#1F2937',
-                    borderRadius: 4,
-                    maxBarThickness: 40
+                    backgroundColor: '#2C3E50',
+                    borderRadius: 4
                 }]
             },
             options: {
@@ -639,38 +875,29 @@
                 plugins: {
                     legend: {
                         position: 'top',
-                        align: 'end',
-                        labels: {
-                            boxWidth: 12,
-                            boxHeight: 12,
-                            padding: 15,
-                            font: {
-                                size: 12
-                            }
-                        }
+                        align: 'end'
                     }
                 },
                 scales: {
                     y: {
                         beginAtZero: true,
-                        grid: {
-                            color: '#F3F4F6'
-                        },
+                        max: 60,
                         ticks: {
-                            font: {
-                                size: 11
-                            }
+                            stepSize: 10
+                        },
+                        grid: {
+                            color: 'rgba(0,0,0,0.05)'
                         }
                     },
                     x: {
                         grid: {
                             display: false
-                        },
-                        ticks: {
-                            font: {
-                                size: 11
-                            }
                         }
+                    }
+                },
+                elements: {
+                    bar: {
+                        borderWidth: 0
                     }
                 }
             }

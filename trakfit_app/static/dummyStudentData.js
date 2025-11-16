@@ -106,7 +106,6 @@
     tableBody.innerHTML = students.map((student, index) => `
         
         <tr class="student-row" data-student-id="${student.id}" style="background-color: ${index % 2 === 1 ? '#f8f9fa' : '#ffffff'};">
-            <td><input type="checkbox" class="student-checkbox" onclick="event.stopPropagation()"></td>
             <td><div class="student-avatar"></div></td>
             <td>
                 <div class="student-info">
