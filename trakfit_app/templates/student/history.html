@@ -19,6 +19,8 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
       rel="stylesheet"
     />
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Custom CSS -->
     <style>
       :root {
@@ -29,6 +31,13 @@
         --input-bg: #f3f3f3;
         --pre-test-color: #e3f2fd;
         --post-test-color: #e8f5e8;
+        --primary-blue: #4A90A4;
+        --sidebar-blue: #3A7CA5;
+        --light-blue: #C1DBF0;
+        --card-bg: #FFFFFF;
+        --text-dark: #2C3E50;
+        --text-light: #7F8C8D;
+        --border-color: #E5E7EB;
       }
 
       body {
@@ -51,37 +60,6 @@
         font-size: 3rem;
         color: #2c3e50;
         margin: 0;
-      }
-
-      .data-card {
-        background: #ffffff;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-        border-radius: 15px;
-        border: none;
-      }
-
-      .filter-card {
-        background: #ffffff;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-        border-radius: 15px;
-        border: none;
-      }
-
-      .test-card {
-        background: #ffffff;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-        border-radius: 12px;
-        border: none;
-        transition: all 0.3s ease;
-        overflow: hidden;
-      }
-
-      .test-card:hover {
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-      }
-
-      .test-card.expanded {
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
       }
 
       .notification-icon {
@@ -210,228 +188,266 @@
         transform: translateX(16px);
       }
 
-      .filter-select {
-        background: #f3f3f3;
-        border: 1px solid #a2c4d9;
-        border-radius: 10px;
-        height: 45px;
-        font-size: 1rem;
-        padding: 0 15px;
+      /* Test History Styles from First Code */
+      .test-history-container {
+        display: grid;
+        grid-template-columns: 220px 1fr;
+        gap: 1.5rem;
+        height: 100%;
       }
 
-      .date-input {
-        background: #f3f3f3;
-        border: 1px solid #a2c4d9;
-        border-radius: 10px;
-        height: 45px;
-        font-size: 1rem;
-        padding: 0 15px;
-        width: 100%;
-      }
-
-      .date-input:focus {
-        outline: none;
-        border-color: #3a7ca5;
-        box-shadow: 0 0 0 2px rgba(58, 124, 165, 0.2);
-      }
-
-      .btn-primary-custom {
-        background: #3a7ca5;
-        border: none;
-        border-radius: 10px;
-        color: white;
-        font-size: 1rem;
-        font-weight: 600;
-        padding: 10px 25px;
-        height: 45px;
-        transition: all 0.3s ease;
-      }
-
-      .btn-primary-custom:hover {
-        background: #2c5f7a;
-        transform: translateY(-1px);
-      }
-
-      .btn-outline-custom {
+      .test-list {
         background: transparent;
-        border: 2px solid #3a7ca5;
-        border-radius: 10px;
-        color: #3a7ca5;
-        font-size: 1rem;
+        border-radius: 0;
+        padding: 0;
+        box-shadow: none;
+        overflow-y: auto;
+      }
+
+      .test-list-title {
+        font-size: clamp(1rem, 1.2vw, 1.2rem);
         font-weight: 600;
-        padding: 10px 25px;
-        height: 45px;
-        transition: all 0.3s ease;
+        color: var(--text-dark);
+        margin-bottom: 1.5rem;
       }
 
-      .btn-outline-custom:hover {
-        background: #3a7ca5;
-        color: white;
-        transform: translateY(-1px);
-      }
-
-      .test-badge {
-        color: #2c3e50;
-        font-size: 0.85rem;
-        font-weight: 600;
-        padding: 5px 12px;
-        border-radius: 20px;
-      }
-
-      .test-badge.pre-test {
-        background: var(--pre-test-color);
-        border: 1px solid #90caf9;
-      }
-
-      .test-badge.post-test {
-        background: var(--post-test-color);
-        border: 1px solid #a5d6a7;
-      }
-
-      .metric-value {
-        font-size: 1.1rem;
-        font-weight: 600;
-        color: #2c3e50;
-      }
-
-      .metric-label {
-        font-size: 0.85rem;
-        color: #6c757d;
-        font-weight: 500;
-      }
-
-      .toggle-details-btn {
-        background: transparent;
-        border: 2px solid #3a7ca5;
-        border-radius: 8px;
-        color: #3a7ca5;
-        font-size: 0.9rem;
-        font-weight: 600;
-        padding: 6px 15px;
-        transition: all 0.3s ease;
+      .test-item {
+        background: var(--light-blue);
+        border-radius: 12px;
+        padding: 1.25rem 1.5rem;
+        margin-bottom: 1rem;
         cursor: pointer;
-      }
-
-      .toggle-details-btn:hover {
-        background: #3a7ca5;
-        color: white;
-      }
-
-      .toggle-details-btn.expanded {
-        background: #3a7ca5;
-        color: white;
-      }
-
-      .filter-row {
-        align-items: end;
-      }
-
-      .date-range-container {
+        transition: all 0.2s ease;
+        position: relative;
         display: flex;
-        gap: 10px;
+        justify-content: space-between;
         align-items: center;
       }
 
-      .date-separator {
-        color: #6c757d;
+      .test-item:hover {
+        background: #87B9D1;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      .test-item.active {
+        background: var(--primary-blue);
+      }
+
+      .test-item.active .test-type,
+      .test-item.active .test-date {
+        color: white;
+      }
+
+      .test-item-content {
+        flex: 1;
+      }
+
+      .test-type {
+        font-weight: 700;
+        color: var(--text-dark);
+        font-size: clamp(0.95rem, 1.05vw, 1.05rem);
+        margin-bottom: 0.25rem;
+      }
+
+      .test-date {
+        font-size: clamp(0.75rem, 0.85vw, 0.85rem);
+        color: var(--text-dark);
         font-weight: 500;
-        margin: 0 5px;
       }
 
-      .test-details {
-        max-height: 0;
-        overflow: hidden;
-        transition: max-height 0.3s ease;
-        background: #f8f9fa;
-        margin-top: 0;
-        border-top: 1px solid #e9ecef;
-      }
-
-      .test-details.expanded {
-        max-height: 500px;
-        margin-top: 1rem;
-      }
-
-      .details-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 1.5rem;
-        padding: 1.5rem;
-      }
-
-      .detail-section {
+      .view-button {
         background: white;
-        padding: 1rem;
-        border-radius: 8px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-      }
-
-      .detail-section h6 {
-        color: #2c3e50;
+        color: var(--primary-blue);
+        border: none;
+        padding: 0.4rem 1rem;
+        border-radius: 20px;
+        font-size: clamp(0.75rem, 0.85vw, 0.85rem);
         font-weight: 600;
-        margin-bottom: 0.75rem;
-        border-bottom: 1px solid #e9ecef;
-        padding-bottom: 0.5rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
       }
 
-      .detail-item {
+      .test-item.active .view-button {
+        background: rgba(255, 255, 255, 0.9);
+      }
+
+      .view-button:hover {
+        background: rgba(255, 255, 255, 1);
+        transform: scale(1.05);
+      }
+
+      .test-details-panel {
+        background: var(--card-bg);
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
         display: flex;
-        justify-content: space-between;
-        margin-bottom: 0.5rem;
-        padding: 0.25rem 0;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
       }
 
-      .detail-item:last-child {
+      .test-details-panel.has-content {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        justify-content: flex-start;
+        overflow: hidden;
+        padding: 2rem;
+      }
+
+      .test-details-content {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        gap: 1.5rem;
+      }
+
+      .table-wrapper {
+        flex: 1;
+        overflow-y: auto;
+        min-height: 0;
+      }
+
+      .empty-state {
+        text-align: center;
+        color: var(--text-light);
+      }
+
+      .empty-state-text {
+        font-size: clamp(1rem, 1.2vw, 1.2rem);
+        color: var(--text-light);
+      }
+
+      .test-details-title {
+        font-size: clamp(1.1rem, 1.3vw, 1.3rem);
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-bottom: 1rem;
+        flex-shrink: 0;
+      }
+
+      .test-results-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
         margin-bottom: 0;
+        border: 1px solid #E5E7EB;
+        border-radius: 12px;
+        overflow: hidden;
+        height: 100%;
       }
 
-      .detail-label {
-        color: #6c757d;
-        font-weight: 500;
-      }
-
-      .detail-value {
-        color: #2c3e50;
+      .test-results-table th {
+        background: #F5F4F5;
+        padding: 0.75rem 1.5rem;
+        text-align: center;
         font-weight: 600;
+        color: var(--text-dark);
+        font-size: clamp(0.8rem, 0.9vw, 0.9rem);
+        border-bottom: 1px solid #E5E7EB;
       }
 
-      @media (max-width: 1400px) {
-        .main-content {
-          margin-left: 250px;
-        }
+      .test-results-table th:first-child {
+        border-top-left-radius: 12px;
       }
 
-      @media (max-width: 1200px) {
-        .main-content {
-          margin-left: 300px;
+      .test-results-table th:last-child {
+        border-top-right-radius: 12px;
+      }
+
+      .test-results-table tbody tr:last-child td:first-child {
+        border-bottom-left-radius: 12px;
+      }
+
+      .test-results-table tbody tr:last-child td:last-child {
+        border-bottom-right-radius: 12px;
+      }
+
+      .test-results-table td {
+        padding: 0.65rem 1.5rem;
+        border-bottom: 1px solid #E5E7EB;
+        font-size: clamp(0.8rem, 0.9vw, 0.9rem);
+        color: var(--text-dark);
+        background: white;
+        text-align: center;
+      }
+
+      .test-results-table tbody tr:last-child td {
+        border-bottom: none;
+      }
+
+      .component-name {
+        font-weight: 500;
+        color: var(--text-dark);
+      }
+
+      .remarks-section {
+        flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .remarks-title {
+        font-size: clamp(0.95rem, 1.1vw, 1.1rem);
+        font-weight: 600;
+        color: var(--text-dark);
+        margin-bottom: 0.75rem;
+        flex-shrink: 0;
+      }
+
+      .remarks-textarea {
+        width: 100%;
+        height: 90px;
+        padding: 0.75rem;
+        border: 1px solid #E5E7EB;
+        border-radius: 8px;
+        font-size: clamp(0.75rem, 0.85vw, 0.85rem);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        resize: none;
+        background: white;
+        flex-shrink: 0;
+      }
+
+      .remarks-textarea:focus {
+        outline: none;
+        border-color: #D1D5DB;
+      }
+
+      .remarks-textarea::placeholder {
+        color: #9CA3AF;
+      }
+
+      .submit-button {
+        background: var(--light-blue);
+        color: var(--text-dark);
+        border: none;
+        padding: 0.4rem 1.2rem;
+        border-radius: 15px;
+        font-size: clamp(0.8rem, 0.9vw, 0.9rem);
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        align-self: flex-end;
+        margin-top: 0.5rem;
+      }
+
+      .submit-button:hover {
+        background: #87B9D1;
+      }
+
+      @media (max-width: 768px) {
+        .test-history-container {
+          grid-template-columns: 1fr;
         }
       }
 
       @media (max-width: 992px) {
-        .sidebar-illustration img {
-          max-width: 200px !important;
-        }
-
         .main-content {
           margin-left: 0;
-        }
-
-        .filter-row {
-          gap: 1rem;
-        }
-
-        .date-range-container {
-          flex-direction: column;
-          gap: 0.5rem;
-        }
-
-        .date-separator {
-          display: none;
-        }
-
-        .details-grid {
-          grid-template-columns: 1fr;
-          gap: 1rem;
         }
       }
     </style>
@@ -446,7 +462,7 @@
       <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="page-title">Fitness Profile History</h1>
         <div class="d-flex align-items-center">
-          <a href="{% url 'student-post-test' %}" class="btn btn-primary me-3 {% if not pre_test %}disabled{% endif %}" style="background: #3a7ca5; border: none; border-radius: 10px; color: white; font-size: 0.9rem; font-weight: 600; padding: 8px 20px; text-decoration: none;{% if not pre_test %} opacity: 0.5; pointer-events: none;{% endif %}" {% if not pre_test %}title="Complete a pre-test first"{% endif %}><i class="fa-solid fa-plus me-2"></i>Post-Test</a>
+          <a href="{% url 'student-post-test' %}" class="btn btn-primary me-3" style="background: #3a7ca5; border: none; border-radius: 10px; color: white; font-size: 0.9rem; font-weight: 600; padding: 8px 20px; text-decoration: none;"><i class="fa-solid fa-plus me-2"></i>Post-Test</a>
           <div class="notification-icon me-3">
             <i class="fa-regular fa-bell" style="font-size: 1.5rem"></i>
           </div>
@@ -473,157 +489,29 @@
         </div>
       </div>
 
-      <!-- Test History -->
-      <div class="row">
-        <div class="col-12">
-          <!-- Mixed Tests Section -->
-          <div class="mb-4">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-              <h4 class="mb-0" style="color: #2c3e50; font-weight: 600;">
-                All Tests
-              </h4>
-              <div class="d-flex gap-3 align-items-center">
-                <div class="d-flex align-items-center gap-2">
-                  <label class="form-label metric-label mb-0">Test Type:</label>
-                  <select class="form-select filter-select" id="testTypeFilter" style="width: auto; min-width: 150px;">
-                    <option value="all" {% if test_type_filter == 'all' %}selected{% endif %}>All Tests</option>
-                    <option value="pre" {% if test_type_filter == 'pre' %}selected{% endif %}>Pre-Tests</option>
-                    <option value="post" {% if test_type_filter == 'post' %}selected{% endif %}>Post-Tests</option>
-                  </select>
-                </div>
-                <div class="d-flex align-items-center gap-2">
-                  <label class="form-label metric-label mb-0">Date Range:</label>
-                  <div class="date-range-container">
-                    <input type="date" class="date-input" id="startDate" value="{{ start_date_filter }}" style="width: 160px;">
-                    <span class="date-separator">to</span>
-                    <input type="date" class="date-input" id="endDate" value="{{ end_date_filter }}" style="width: 160px;">
-                  </div>
-                </div>
-              </div>
+      <!-- Test History Section from First Code -->
+      <div class="test-history-container">
+        <div class="test-list">
+          <h3 class="test-list-title">Test Records</h3>
+          <div class="test-item" onclick="showTestDetails('pre-test', event)">
+            <div class="test-item-content">
+              <div class="test-type">Pre-Test</div>
+              <div class="test-date">August 15, 2025</div>
             </div>
-            <div id="tests-container">
-              {% if tests %}
-                {% for test in tests %}
-                <div class="test-card p-4 mb-3" id="test-{{ test.test_id }}">
-                  <div class="row align-items-center">
-                    <div class="col-md-3">
-                      <span class="test-badge {% if test.test_type == 'pre' %}pre-test{% else %}post-test{% endif %}">
-                        {{ test.get_test_type_display|upper }}
-                      </span>
-                      <div class="metric-label mt-1">{{ test.taken_at|date:"M d, Y" }}</div>
-                      <div class="metric-label">{{ test.taken_at|date:"g:i A" }}</div>
-                    </div>
-                    <div class="col-md-3">
-                      <div class="metric-label">VO₂ Max</div>
-                      <div class="metric-value">
-                        {% if test.vo2_max %}
-                          {{ test.vo2_max|floatformat:1 }} ml/kg/min
-                        {% else %}
-                          N/A
-                        {% endif %}
-                      </div>
-                    </div>
-                    <div class="col-md-3">
-                      <div class="metric-label">BMI</div>
-                      <div class="metric-value">
-                        {% if test.bmi %}
-                          {{ test.bmi|floatformat:1 }} ({{ test.bmi_status }})
-                        {% else %}
-                          N/A
-                        {% endif %}
-                      </div>
-                    </div>
-                    <div class="col-md-3 text-end">
-                      <button class="toggle-details-btn" onclick="toggleTestDetails('test-{{ test.test_id }}')">
-                        View Details
-                      </button>
-                    </div>
-                  </div>
-                  <div class="test-details" id="test-{{ test.test_id }}-details">
-                    <div class="details-grid">
-                      <div class="detail-section">
-                        <h6>Test Information</h6>
-                        <div class="detail-item">
-                          <span class="detail-label">Type:</span>
-                          <span class="detail-value">{{ test.get_test_type_display }}</span>
-                        </div>
-                        <div class="detail-item">
-                          <span class="detail-label">Date:</span>
-                          <span class="detail-value">{{ test.taken_at|date:"F d, Y" }}</span>
-                        </div>
-                        <div class="detail-item">
-                          <span class="detail-label">Time:</span>
-                          <span class="detail-value">{{ test.taken_at|date:"g:i A" }}</span>
-                        </div>
-                      </div>
-                      <div class="detail-section">
-                        <h6>Body Metrics</h6>
-                        <div class="detail-item">
-                          <span class="detail-label">Height:</span>
-                          <span class="detail-value">{{ test.height_cm|default:"N/A" }} {% if test.height_cm %}cm{% endif %}</span>
-                        </div>
-                        <div class="detail-item">
-                          <span class="detail-label">Weight:</span>
-                          <span class="detail-value">{{ test.weight_kg|default:"N/A" }} {% if test.weight_kg %}kg{% endif %}</span>
-                        </div>
-                        <div class="detail-item">
-                          <span class="detail-label">BMI:</span>
-                          <span class="detail-value">
-                            {% if test.bmi %}
-                              {{ test.bmi|floatformat:1 }} ({{ test.bmi_status }})
-                            {% else %}
-                              N/A
-                            {% endif %}
-                          </span>
-                        </div>
-                      </div>
-                      <div class="detail-section">
-                        <h6>Fitness Results</h6>
-                        <div class="detail-item">
-                          <span class="detail-label">Flexibility:</span>
-                          <span class="detail-value">{{ test.flexibility_cm|default:"N/A" }} {% if test.flexibility_cm %}cm{% endif %}</span>
-                        </div>
-                        <div class="detail-item">
-                          <span class="detail-label">Strength:</span>
-                          <span class="detail-value">{{ test.strength_reps|default:"N/A" }} {% if test.strength_reps %}reps{% endif %}</span>
-                        </div>
-                        <div class="detail-item">
-                          <span class="detail-label">Agility:</span>
-                          <span class="detail-value">{{ test.agility_sec|default:"N/A" }} {% if test.agility_sec %}sec{% endif %}</span>
-                        </div>
-                      </div>
-                      <div class="detail-section">
-                        <h6>Performance Metrics</h6>
-                        <div class="detail-item">
-                          <span class="detail-label">Speed (40m):</span>
-                          <span class="detail-value">{{ test.speed_sec|default:"N/A" }} {% if test.speed_sec %}sec{% endif %}</span>
-                        </div>
-                        <div class="detail-item">
-                          <span class="detail-label">Endurance (1.5km):</span>
-                          <span class="detail-value">{{ test.get_endurance_display|default:"N/A" }}</span>
-                        </div>
-                        <div class="detail-item">
-                          <span class="detail-label">VO₂ Max:</span>
-                          <span class="detail-value">
-                            {% if test.vo2_max %}
-                              {{ test.vo2_max|floatformat:1 }} ml/kg/min
-                            {% else %}
-                              N/A
-                            {% endif %}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                {% endfor %}
-              {% else %}
-                <div class="alert alert-info text-center" role="alert" style="border-radius: 15px;">
-                  <h5 class="mb-0">No fitness tests found</h5>
-                  <p class="mb-0 mt-2">Start by creating your first test using the button above.</p>
-                </div>
-              {% endif %}
+            <button class="view-button">View</button>
+          </div>
+          <div class="test-item" onclick="showTestDetails('post-test', event)">
+            <div class="test-item-content">
+              <div class="test-type">Post-Test</div>
+              <div class="test-date">August 15, 2025</div>
             </div>
+            <button class="view-button">View</button>
+          </div>
+        </div>
+
+        <div class="test-details-panel" id="test-details-panel">
+          <div class="empty-state">
+            <p class="empty-state-text">Select a test to view details</p>
           </div>
         </div>
       </div>
@@ -633,80 +521,121 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-      // Set default date range (last 30 days) only if not already set
-      document.addEventListener("DOMContentLoaded", function () {
-        const startDateInput = document.getElementById('startDate');
-        const endDateInput = document.getElementById('endDate');
-        
-        // Only set default dates if both are empty
-        if (!startDateInput.value && !endDateInput.value) {
-          const endDate = new Date();
-          const startDate = new Date();
-          startDate.setDate(startDate.getDate() - 30);
-          
-          startDateInput.valueAsDate = startDate;
-          endDateInput.valueAsDate = endDate;
-        }
+      // Test History Functions from First Code
+      function showTestDetails(testType, event) {
+        // Remove active class from all test items
+        document.querySelectorAll('.test-item').forEach(item => {
+          item.classList.remove('active');
+        });
 
-        // Add event listeners for filtering
-        document.getElementById('testTypeFilter').addEventListener('change', filterTests);
-        startDateInput.addEventListener('change', filterTests);
-        endDateInput.addEventListener('change', filterTests);
-      });
+        // Add active class to clicked item
+        event.currentTarget.classList.add('active');
 
-      function toggleTestDetails(testId) {
-        const details = document.getElementById(`${testId}-details`);
-        const button = document.querySelector(`#${testId} .toggle-details-btn`);
-        const card = document.getElementById(testId);
+        const panel = document.getElementById('test-details-panel');
+        panel.classList.add('has-content');
 
-        if (details.classList.contains('expanded')) {
-          details.classList.remove('expanded');
-          button.classList.remove('expanded');
-          card.classList.remove('expanded');
-          button.textContent = 'View Details';
-        } else {
-          // Close any other expanded tests
-          document.querySelectorAll('.test-details.expanded').forEach(el => {
-            el.classList.remove('expanded');
-          });
-          document.querySelectorAll('.toggle-details-btn.expanded').forEach(el => {
-            el.classList.remove('expanded');
-            el.textContent = 'View Details';
-          });
-          document.querySelectorAll('.test-card.expanded').forEach(el => {
-            el.classList.remove('expanded');
-          });
-
-          details.classList.add('expanded');
-          button.classList.add('expanded');
-          card.classList.add('expanded');
-          button.textContent = 'Hide Details';
-        }
-      }
-
-      function filterTests() {
-        const testType = document.getElementById('testTypeFilter').value;
-        const startDate = document.getElementById('startDate').value;
-        const endDate = document.getElementById('endDate').value;
-
-        // Build query parameters
-        const params = new URLSearchParams();
-        if (testType && testType !== 'all') {
-          params.append('test_type', testType);
-        }
-        if (startDate) {
-          params.append('start_date', startDate);
-        }
-        if (endDate) {
-          params.append('end_date', endDate);
-        }
-
-        // Redirect with query parameters
-        const queryString = params.toString();
-        if (queryString) {
-          window.location.href = window.location.pathname + '?' + queryString;
-        } else {
-          window.location.href = window.location.pathname;
+        if (testType === 'pre-test') {
+          panel.innerHTML = `
+            <div class="test-details-content">
+              <h2 class="test-details-title">Pre-Test Results</h2>
+              <div class="table-wrapper">
+                <table class="test-results-table">
+                  <thead>
+                    <tr>
+                      <th>Fitness Component</th>
+                      <th>Value</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="component-name">Body Mass Index (BMI)</td>
+                      <td>24.5</td>
+                    </tr>
+                    <tr>
+                      <td class="component-name">VO<sub>2</sub> Max</td>
+                      <td>42.5 mL/kg/min</td>
+                    </tr>
+                    <tr>
+                      <td class="component-name">Flexibility</td>
+                      <td>12 cm</td>
+                    </tr>
+                    <tr>
+                      <td class="component-name">Strength</td>
+                      <td>25 push-ups</td>
+                    </tr>
+                    <tr>
+                      <td class="component-name">Agility</td>
+                      <td>17.8 sec</td>
+                    </tr>
+                    <tr>
+                      <td class="component-name">Speed</td>
+                      <td>5.9 sec</td>
+                    </tr>
+                    <tr>
+                      <td class="component-name">Endurance</td>
+                      <td>12:30 min</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="remarks-section">
+                <h3 class="remarks-title">Remarks</h3>
+                <textarea class="remarks-textarea" placeholder="Enter your remarks...">Student shows good baseline fitness levels. Focus on improving flexibility and endurance in the coming semester.</textarea>
+                <button class="submit-button">Submit</button>
+              </div>
+            </div>
+          `;
+        } else if (testType === 'post-test') {
+          panel.innerHTML = `
+            <div class="test-details-content">
+              <h2 class="test-details-title">Post-Test Results</h2>
+              <div class="table-wrapper">
+                <table class="test-results-table">
+                  <thead>
+                    <tr>
+                      <th>Fitness Component</th>
+                      <th>Value</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="component-name">Body Mass Index (BMI)</td>
+                      <td>24.2</td>
+                    </tr>
+                    <tr>
+                      <td class="component-name">VO<sub>2</sub> Max</td>
+                      <td>46.1 mL/kg/min</td>
+                    </tr>
+                    <tr>
+                      <td class="component-name">Flexibility</td>
+                      <td>15 cm</td>
+                    </tr>
+                    <tr>
+                      <td class="component-name">Strength</td>
+                      <td>35 push-ups</td>
+                    </tr>
+                    <tr>
+                      <td class="component-name">Agility</td>
+                      <td>16.9 sec</td>
+                    </tr>
+                    <tr>
+                      <td class="component-name">Speed</td>
+                      <td>5.6 sec</td>
+                    </tr>
+                    <tr>
+                      <td class="component-name">Endurance</td>
+                      <td>11:15 min</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="remarks-section">
+                <h3 class="remarks-title">Remarks</h3>
+                <textarea class="remarks-textarea" placeholder="Enter your remarks...">Excellent improvement across all fitness components! Student has shown great dedication and progress. Continue current training regimen.</textarea>
+                <button class="submit-button">Submit</button>
+              </div>
+            </div>
+          `;
         }
       }
 
@@ -735,13 +664,13 @@
           const form = document.createElement('form');
           form.method = 'POST';
           form.action = "{% url 'logout' %}";
-          
+
           const csrfInput = document.createElement('input');
           csrfInput.type = 'hidden';
           csrfInput.name = 'csrfmiddlewaretoken';
           csrfInput.value = '{{ csrf_token }}';
           form.appendChild(csrfInput);
-          
+
           document.body.appendChild(form);
           form.submit();
         }
@@ -754,18 +683,6 @@
         if (userAvatarContainer && !userAvatarContainer.contains(event.target)) {
           dropdown.classList.remove("show");
         }
-      });
-
-      // Navigation active state
-      document.addEventListener("DOMContentLoaded", function () {
-        const navItems = document.querySelectorAll(".nav-item");
-
-        navItems.forEach((item) => {
-          item.addEventListener("click", function () {
-            navItems.forEach((nav) => nav.classList.remove("active"));
-            this.classList.add("active");
-          });
-        });
       });
     </script>
   </body>
