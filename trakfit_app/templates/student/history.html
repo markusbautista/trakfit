@@ -1,0 +1,772 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TrakFit - Fitness Profile History</title>
+    <!-- Bootstrap -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&family=Albert+Sans:wght@500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <!-- Custom CSS -->
+    <style>
+      :root {
+        --primary-color: #3a7ca5;
+        --light-blue: #9ec5e5;
+        --dark-text: #2c3e50;
+        --light-bg: #fafafa;
+        --input-bg: #f3f3f3;
+        --pre-test-color: #e3f2fd;
+        --post-test-color: #e8f5e8;
+      }
+
+      body {
+        font-family: "Sarabun", sans-serif;
+        background-color: var(--light-bg);
+        overflow-x: hidden;
+      }
+
+      .main-content {
+        margin-left: 250px;
+        padding: 1.5rem;
+        min-height: 100vh;
+      }
+
+      .brand-font {
+        font-family: "Albert Sans", sans-serif;
+      }
+
+      .page-title {
+        font-size: 3rem;
+        color: #2c3e50;
+        margin: 0;
+      }
+
+      .data-card {
+        background: #ffffff;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        border-radius: 15px;
+        border: none;
+      }
+
+      .filter-card {
+        background: #ffffff;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        border-radius: 15px;
+        border: none;
+      }
+
+      .test-card {
+        background: #ffffff;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        border-radius: 12px;
+        border: none;
+        transition: all 0.3s ease;
+        overflow: hidden;
+      }
+
+      .test-card:hover {
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      .test-card.expanded {
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+      }
+
+      .notification-icon {
+        width: 40px;
+        height: 40px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #7f8c8d;
+        font-size: 1.2rem;
+      }
+
+      .user-avatar-container {
+        position: relative;
+      }
+
+      .user-avatar {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        object-fit: cover;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .user-avatar:hover {
+        transform: scale(1.05);
+      }
+
+      .profile-dropdown {
+        position: absolute;
+        top: 50px;
+        right: 0;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        width: 180px;
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-10px);
+        transition: all 0.3s ease;
+        padding: 8px 0;
+      }
+
+      .profile-dropdown.show {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+      }
+
+      .dropdown-item {
+        padding: 12px 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+        font-size: 14px;
+        color: #374151;
+      }
+
+      .dropdown-item:hover {
+        background-color: #f9fafb;
+      }
+
+      .view-profile-item {
+        font-weight: 500;
+        justify-content: flex-start;
+        gap: 12px;
+      }
+
+      .dark-mode-item {
+        cursor: default;
+      }
+
+      .logout-item {
+        color: #6b7280;
+      }
+
+      .dropdown-divider {
+        height: 1px;
+        background-color: #e5e7eb;
+        margin: 8px 0;
+      }
+
+      .toggle-switch {
+        flex-shrink: 0;
+      }
+
+      .toggle-switch input[type="checkbox"] {
+        display: none;
+      }
+
+      .slider {
+        width: 36px;
+        height: 20px;
+        background-color: #d1d5db;
+        border-radius: 20px;
+        display: inline-block;
+        position: relative;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      .slider:before {
+        content: "";
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        background-color: white;
+        border-radius: 50%;
+        top: 2px;
+        left: 2px;
+        transition: transform 0.3s ease;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      }
+
+      .toggle-switch input[type="checkbox"]:checked + .slider {
+        background-color: #3b82f6;
+      }
+
+      .toggle-switch input[type="checkbox"]:checked + .slider:before {
+        transform: translateX(16px);
+      }
+
+      .filter-select {
+        background: #f3f3f3;
+        border: 1px solid #a2c4d9;
+        border-radius: 10px;
+        height: 45px;
+        font-size: 1rem;
+        padding: 0 15px;
+      }
+
+      .date-input {
+        background: #f3f3f3;
+        border: 1px solid #a2c4d9;
+        border-radius: 10px;
+        height: 45px;
+        font-size: 1rem;
+        padding: 0 15px;
+        width: 100%;
+      }
+
+      .date-input:focus {
+        outline: none;
+        border-color: #3a7ca5;
+        box-shadow: 0 0 0 2px rgba(58, 124, 165, 0.2);
+      }
+
+      .btn-primary-custom {
+        background: #3a7ca5;
+        border: none;
+        border-radius: 10px;
+        color: white;
+        font-size: 1rem;
+        font-weight: 600;
+        padding: 10px 25px;
+        height: 45px;
+        transition: all 0.3s ease;
+      }
+
+      .btn-primary-custom:hover {
+        background: #2c5f7a;
+        transform: translateY(-1px);
+      }
+
+      .btn-outline-custom {
+        background: transparent;
+        border: 2px solid #3a7ca5;
+        border-radius: 10px;
+        color: #3a7ca5;
+        font-size: 1rem;
+        font-weight: 600;
+        padding: 10px 25px;
+        height: 45px;
+        transition: all 0.3s ease;
+      }
+
+      .btn-outline-custom:hover {
+        background: #3a7ca5;
+        color: white;
+        transform: translateY(-1px);
+      }
+
+      .test-badge {
+        color: #2c3e50;
+        font-size: 0.85rem;
+        font-weight: 600;
+        padding: 5px 12px;
+        border-radius: 20px;
+      }
+
+      .test-badge.pre-test {
+        background: var(--pre-test-color);
+        border: 1px solid #90caf9;
+      }
+
+      .test-badge.post-test {
+        background: var(--post-test-color);
+        border: 1px solid #a5d6a7;
+      }
+
+      .metric-value {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #2c3e50;
+      }
+
+      .metric-label {
+        font-size: 0.85rem;
+        color: #6c757d;
+        font-weight: 500;
+      }
+
+      .toggle-details-btn {
+        background: transparent;
+        border: 2px solid #3a7ca5;
+        border-radius: 8px;
+        color: #3a7ca5;
+        font-size: 0.9rem;
+        font-weight: 600;
+        padding: 6px 15px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+      }
+
+      .toggle-details-btn:hover {
+        background: #3a7ca5;
+        color: white;
+      }
+
+      .toggle-details-btn.expanded {
+        background: #3a7ca5;
+        color: white;
+      }
+
+      .filter-row {
+        align-items: end;
+      }
+
+      .date-range-container {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+
+      .date-separator {
+        color: #6c757d;
+        font-weight: 500;
+        margin: 0 5px;
+      }
+
+      .test-details {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+        background: #f8f9fa;
+        margin-top: 0;
+        border-top: 1px solid #e9ecef;
+      }
+
+      .test-details.expanded {
+        max-height: 500px;
+        margin-top: 1rem;
+      }
+
+      .details-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+        padding: 1.5rem;
+      }
+
+      .detail-section {
+        background: white;
+        padding: 1rem;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      }
+
+      .detail-section h6 {
+        color: #2c3e50;
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+        border-bottom: 1px solid #e9ecef;
+        padding-bottom: 0.5rem;
+      }
+
+      .detail-item {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+        padding: 0.25rem 0;
+      }
+
+      .detail-item:last-child {
+        margin-bottom: 0;
+      }
+
+      .detail-label {
+        color: #6c757d;
+        font-weight: 500;
+      }
+
+      .detail-value {
+        color: #2c3e50;
+        font-weight: 600;
+      }
+
+      @media (max-width: 1400px) {
+        .main-content {
+          margin-left: 250px;
+        }
+      }
+
+      @media (max-width: 1200px) {
+        .main-content {
+          margin-left: 300px;
+        }
+      }
+
+      @media (max-width: 992px) {
+        .sidebar-illustration img {
+          max-width: 200px !important;
+        }
+
+        .main-content {
+          margin-left: 0;
+        }
+
+        .filter-row {
+          gap: 1rem;
+        }
+
+        .date-range-container {
+          flex-direction: column;
+          gap: 0.5rem;
+        }
+
+        .date-separator {
+          display: none;
+        }
+
+        .details-grid {
+          grid-template-columns: 1fr;
+          gap: 1rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Sidebar -->
+    {% include 'student/sidebar.html' %}
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Header -->
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="page-title">Fitness Profile History</h1>
+        <div class="d-flex align-items-center">
+          <a href="{% url 'student-post-test' %}" class="btn btn-primary me-3" style="background: #3a7ca5; border: none; border-radius: 10px; color: white; font-size: 0.9rem; font-weight: 600; padding: 8px 20px; text-decoration: none;"><i class="fa-solid fa-plus me-2"></i>Post-Test</a>
+          <div class="notification-icon me-3">
+            <i class="fa-regular fa-bell" style="font-size: 1.5rem"></i>
+          </div>
+          <div class="user-avatar-container">
+            <img src="{% static 'profile.png' %}" alt="User Avatar" class="user-avatar" onclick="toggleProfileDropdown()" />
+            <div class="profile-dropdown" id="profileDropdown">
+              <div class="dropdown-item view-profile-item" onclick="viewProfile()">
+                <span>View Profile</span>
+              </div>
+              <div class="dropdown-divider"></div>
+              <div class="dropdown-item dark-mode-item">
+                <span>Dark mode</span>
+                <div class="toggle-switch">
+                  <input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode()"/>
+                  <label for="darkModeToggle" class="slider"></label>
+                </div>
+              </div>
+              <div class="dropdown-divider"></div>
+              <div class="dropdown-item logout-item" onclick="logout()">
+                <span>Logout ></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Test History -->
+      <div class="row">
+        <div class="col-12">
+          <!-- Mixed Tests Section -->
+          <div class="mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h4 class="mb-0" style="color: #2c3e50; font-weight: 600;">
+                All Tests
+              </h4>
+              <div class="d-flex gap-3 align-items-center">
+                <div class="d-flex align-items-center gap-2">
+                  <label class="form-label metric-label mb-0">Test Type:</label>
+                  <select class="form-select filter-select" id="testTypeFilter" style="width: auto; min-width: 150px;">
+                    <option value="all" {% if test_type_filter == 'all' %}selected{% endif %}>All Tests</option>
+                    <option value="pre" {% if test_type_filter == 'pre' %}selected{% endif %}>Pre-Tests</option>
+                    <option value="post" {% if test_type_filter == 'post' %}selected{% endif %}>Post-Tests</option>
+                  </select>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                  <label class="form-label metric-label mb-0">Date Range:</label>
+                  <div class="date-range-container">
+                    <input type="date" class="date-input" id="startDate" value="{{ start_date_filter }}" style="width: 160px;">
+                    <span class="date-separator">to</span>
+                    <input type="date" class="date-input" id="endDate" value="{{ end_date_filter }}" style="width: 160px;">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div id="tests-container">
+              {% if tests %}
+                {% for test in tests %}
+                <div class="test-card p-4 mb-3" id="test-{{ test.test_id }}">
+                  <div class="row align-items-center">
+                    <div class="col-md-3">
+                      <span class="test-badge {% if test.test_type == 'pre' %}pre-test{% else %}post-test{% endif %}">
+                        {{ test.get_test_type_display|upper }}
+                      </span>
+                      <div class="metric-label mt-1">{{ test.taken_at|date:"M d, Y" }}</div>
+                      <div class="metric-label">{{ test.taken_at|date:"g:i A" }}</div>
+                    </div>
+                    <div class="col-md-3">
+                      <div class="metric-label">VO₂ Max</div>
+                      <div class="metric-value">
+                        {% if test.vo2_max %}
+                          {{ test.vo2_max|floatformat:1 }} ml/kg/min
+                        {% else %}
+                          N/A
+                        {% endif %}
+                      </div>
+                    </div>
+                    <div class="col-md-3">
+                      <div class="metric-label">BMI</div>
+                      <div class="metric-value">
+                        {% if test.bmi %}
+                          {{ test.bmi|floatformat:1 }} ({{ test.bmi_status }})
+                        {% else %}
+                          N/A
+                        {% endif %}
+                      </div>
+                    </div>
+                    <div class="col-md-3 text-end">
+                      <button class="toggle-details-btn" onclick="toggleTestDetails('test-{{ test.test_id }}')">
+                        View Details
+                      </button>
+                    </div>
+                  </div>
+                  <div class="test-details" id="test-{{ test.test_id }}-details">
+                    <div class="details-grid">
+                      <div class="detail-section">
+                        <h6>Test Information</h6>
+                        <div class="detail-item">
+                          <span class="detail-label">Type:</span>
+                          <span class="detail-value">{{ test.get_test_type_display }}</span>
+                        </div>
+                        <div class="detail-item">
+                          <span class="detail-label">Date:</span>
+                          <span class="detail-value">{{ test.taken_at|date:"F d, Y" }}</span>
+                        </div>
+                        <div class="detail-item">
+                          <span class="detail-label">Time:</span>
+                          <span class="detail-value">{{ test.taken_at|date:"g:i A" }}</span>
+                        </div>
+                      </div>
+                      <div class="detail-section">
+                        <h6>Body Metrics</h6>
+                        <div class="detail-item">
+                          <span class="detail-label">Height:</span>
+                          <span class="detail-value">{{ test.height_cm|default:"N/A" }} {% if test.height_cm %}cm{% endif %}</span>
+                        </div>
+                        <div class="detail-item">
+                          <span class="detail-label">Weight:</span>
+                          <span class="detail-value">{{ test.weight_kg|default:"N/A" }} {% if test.weight_kg %}kg{% endif %}</span>
+                        </div>
+                        <div class="detail-item">
+                          <span class="detail-label">BMI:</span>
+                          <span class="detail-value">
+                            {% if test.bmi %}
+                              {{ test.bmi|floatformat:1 }} ({{ test.bmi_status }})
+                            {% else %}
+                              N/A
+                            {% endif %}
+                          </span>
+                        </div>
+                      </div>
+                      <div class="detail-section">
+                        <h6>Fitness Results</h6>
+                        <div class="detail-item">
+                          <span class="detail-label">Flexibility:</span>
+                          <span class="detail-value">{{ test.flexibility_cm|default:"N/A" }} {% if test.flexibility_cm %}cm{% endif %}</span>
+                        </div>
+                        <div class="detail-item">
+                          <span class="detail-label">Strength:</span>
+                          <span class="detail-value">{{ test.strength_reps|default:"N/A" }} {% if test.strength_reps %}reps{% endif %}</span>
+                        </div>
+                        <div class="detail-item">
+                          <span class="detail-label">Agility:</span>
+                          <span class="detail-value">{{ test.agility_sec|default:"N/A" }} {% if test.agility_sec %}sec{% endif %}</span>
+                        </div>
+                      </div>
+                      <div class="detail-section">
+                        <h6>Performance Metrics</h6>
+                        <div class="detail-item">
+                          <span class="detail-label">Speed (40m):</span>
+                          <span class="detail-value">{{ test.speed_sec|default:"N/A" }} {% if test.speed_sec %}sec{% endif %}</span>
+                        </div>
+                        <div class="detail-item">
+                          <span class="detail-label">Endurance (1.5km):</span>
+                          <span class="detail-value">{{ test.get_endurance_display|default:"N/A" }}</span>
+                        </div>
+                        <div class="detail-item">
+                          <span class="detail-label">VO₂ Max:</span>
+                          <span class="detail-value">
+                            {% if test.vo2_max %}
+                              {{ test.vo2_max|floatformat:1 }} ml/kg/min
+                            {% else %}
+                              N/A
+                            {% endif %}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {% endfor %}
+              {% else %}
+                <div class="alert alert-info text-center" role="alert" style="border-radius: 15px;">
+                  <h5 class="mb-0">No fitness tests found</h5>
+                  <p class="mb-0 mt-2">Start by creating your first test using the button above.</p>
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+      // Set default date range (last 30 days) only if not already set
+      document.addEventListener("DOMContentLoaded", function () {
+        const startDateInput = document.getElementById('startDate');
+        const endDateInput = document.getElementById('endDate');
+        
+        // Only set default dates if both are empty
+        if (!startDateInput.value && !endDateInput.value) {
+          const endDate = new Date();
+          const startDate = new Date();
+          startDate.setDate(startDate.getDate() - 30);
+          
+          startDateInput.valueAsDate = startDate;
+          endDateInput.valueAsDate = endDate;
+        }
+
+        // Add event listeners for filtering
+        document.getElementById('testTypeFilter').addEventListener('change', filterTests);
+        startDateInput.addEventListener('change', filterTests);
+        endDateInput.addEventListener('change', filterTests);
+      });
+
+      function toggleTestDetails(testId) {
+        const details = document.getElementById(`${testId}-details`);
+        const button = document.querySelector(`#${testId} .toggle-details-btn`);
+        const card = document.getElementById(testId);
+
+        if (details.classList.contains('expanded')) {
+          details.classList.remove('expanded');
+          button.classList.remove('expanded');
+          card.classList.remove('expanded');
+          button.textContent = 'View Details';
+        } else {
+          // Close any other expanded tests
+          document.querySelectorAll('.test-details.expanded').forEach(el => {
+            el.classList.remove('expanded');
+          });
+          document.querySelectorAll('.toggle-details-btn.expanded').forEach(el => {
+            el.classList.remove('expanded');
+            el.textContent = 'View Details';
+          });
+          document.querySelectorAll('.test-card.expanded').forEach(el => {
+            el.classList.remove('expanded');
+          });
+
+          details.classList.add('expanded');
+          button.classList.add('expanded');
+          card.classList.add('expanded');
+          button.textContent = 'Hide Details';
+        }
+      }
+
+      function filterTests() {
+        const testType = document.getElementById('testTypeFilter').value;
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
+
+        // Build query parameters
+        const params = new URLSearchParams();
+        if (testType && testType !== 'all') {
+          params.append('test_type', testType);
+        }
+        if (startDate) {
+          params.append('start_date', startDate);
+        }
+        if (endDate) {
+          params.append('end_date', endDate);
+        }
+
+        // Redirect with query parameters
+        const queryString = params.toString();
+        if (queryString) {
+          window.location.href = window.location.pathname + '?' + queryString;
+        } else {
+          window.location.href = window.location.pathname;
+        }
+      }
+
+      // Profile Dropdown Functions
+      function toggleProfileDropdown() {
+        const dropdown = document.getElementById("profileDropdown");
+        dropdown.classList.toggle("show");
+      }
+
+      function viewProfile() {
+        window.location.href = "{% url 'student-profile' %}";
+      }
+
+      function toggleDarkMode() {
+        const toggle = document.getElementById("darkModeToggle");
+        if (toggle.checked) {
+          document.body.classList.add("dark-mode");
+        } else {
+          document.body.classList.remove("dark-mode");
+        }
+      }
+
+      function logout() {
+        if (confirm("Are you sure you want to log out?")) {
+          // Create a form to POST to logout endpoint with CSRF token
+          const form = document.createElement('form');
+          form.method = 'POST';
+          form.action = "{% url 'logout' %}";
+          
+          const csrfInput = document.createElement('input');
+          csrfInput.type = 'hidden';
+          csrfInput.name = 'csrfmiddlewaretoken';
+          csrfInput.value = '{{ csrf_token }}';
+          form.appendChild(csrfInput);
+          
+          document.body.appendChild(form);
+          form.submit();
+        }
+      }
+
+      document.addEventListener("click", function (event) {
+        const dropdown = document.getElementById("profileDropdown");
+        const userAvatarContainer = document.querySelector(".user-avatar-container");
+
+        if (userAvatarContainer && !userAvatarContainer.contains(event.target)) {
+          dropdown.classList.remove("show");
+        }
+      });
+
+      // Navigation active state
+      document.addEventListener("DOMContentLoaded", function () {
+        const navItems = document.querySelectorAll(".nav-item");
+
+        navItems.forEach((item) => {
+          item.addEventListener("click", function () {
+            navItems.forEach((nav) => nav.classList.remove("active"));
+            this.classList.add("active");
+          });
+        });
+      });
+    </script>
+  </body>
+</html>
