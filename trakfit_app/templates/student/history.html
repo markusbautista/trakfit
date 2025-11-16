@@ -592,20 +592,19 @@
       <div class="test-history-container">
         <div class="test-list">
           <h3 class="test-list-title">Test Records</h3>
-          <div class="test-item" onclick="showTestDetails('pre-test', event)">
-            <div class="test-item-content">
-              <div class="test-type">Pre-Test</div>
-              <div class="test-date">August 15, 2025</div>
+          {% if tests %}
+            {% for test in tests %}
+            <div class="test-item" onclick="showTestDetails({{ test.test_id }}, event)">
+              <div class="test-item-content">
+                <div class="test-type">{{ test.get_test_type_display }}</div>
+                <div class="test-date">{{ test.taken_at|date:"F d, Y"|default:"N/A" }}</div>
+              </div>
+              <button class="view-button">View</button>
             </div>
-            <button class="view-button">View</button>
-          </div>
-          <div class="test-item" onclick="showTestDetails('post-test', event)">
-            <div class="test-item-content">
-              <div class="test-type">Post-Test</div>
-              <div class="test-date">August 15, 2025</div>
-            </div>
-            <button class="view-button">View</button>
-          </div>
+            {% endfor %}
+          {% else %}
+            <p style="color: var(--text-light); text-align: center; margin-top: 2rem;">No test records found.</p>
+          {% endif %}
         </div>
 
         <div class="test-details-panel" id="test-details-panel">
@@ -620,8 +619,11 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-      // Test History Functions from First Code
-      function showTestDetails(testType, event) {
+      // Store tests data from backend
+      const testsData = {{ tests_json|safe }};
+
+      // Test History Functions
+      function showTestDetails(testId, event) {
         // Remove active class from all test items
         document.querySelectorAll('.test-item').forEach(item => {
           item.classList.remove('active');
@@ -630,112 +632,83 @@
         // Add active class to clicked item
         event.currentTarget.classList.add('active');
 
+        // Find the test data
+        const test = testsData.find(t => t.test_id === testId);
+        if (!test) return;
+
         const panel = document.getElementById('test-details-panel');
         panel.classList.add('has-content');
 
-        if (testType === 'pre-test') {
-          panel.innerHTML = `
-            <div class="test-details-content">
-              <h2 class="test-details-title">Pre-Test Results</h2>
-              <div class="table-wrapper">
-                <table class="test-results-table">
-                  <thead>
-                    <tr>
-                      <th>Fitness Component</th>
-                      <th>Value</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td class="component-name">Body Mass Index (BMI)</td>
-                      <td>24.5</td>
-                    </tr>
-                    <tr>
-                      <td class="component-name">VO<sub>2</sub> Max</td>
-                      <td>42.5 mL/kg/min</td>
-                    </tr>
-                    <tr>
-                      <td class="component-name">Flexibility</td>
-                      <td>12 cm</td>
-                    </tr>
-                    <tr>
-                      <td class="component-name">Strength</td>
-                      <td>25 push-ups</td>
-                    </tr>
-                    <tr>
-                      <td class="component-name">Agility</td>
-                      <td>17.8 sec</td>
-                    </tr>
-                    <tr>
-                      <td class="component-name">Speed</td>
-                      <td>5.9 sec</td>
-                    </tr>
-                    <tr>
-                      <td class="component-name">Endurance</td>
-                      <td>12:30 min</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-              <div class="remarks-section">
-                <h3 class="remarks-title">Remarks</h3>
-                <textarea class="remarks-textarea" placeholder="Enter your remarks...">Student shows good baseline fitness levels. Focus on improving flexibility and endurance in the coming semester.</textarea>
-                <button class="submit-button">Submit</button>
-              </div>
-            </div>
-          `;
-        } else if (testType === 'post-test') {
-          panel.innerHTML = `
-            <div class="test-details-content">
-              <h2 class="test-details-title">Post-Test Results</h2>
-              <div class="table-wrapper">
-                <table class="test-results-table">
-                  <thead>
-                    <tr>
-                      <th>Fitness Component</th>
-                      <th>Value</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td class="component-name">Body Mass Index (BMI)</td>
-                      <td>24.2</td>
-                    </tr>
-                    <tr>
-                      <td class="component-name">VO<sub>2</sub> Max</td>
-                      <td>46.1 mL/kg/min</td>
-                    </tr>
-                    <tr>
-                      <td class="component-name">Flexibility</td>
-                      <td>15 cm</td>
-                    </tr>
-                    <tr>
-                      <td class="component-name">Strength</td>
-                      <td>35 push-ups</td>
-                    </tr>
-                    <tr>
-                      <td class="component-name">Agility</td>
-                      <td>16.9 sec</td>
-                    </tr>
-                    <tr>
-                      <td class="component-name">Speed</td>
-                      <td>5.6 sec</td>
-                    </tr>
-                    <tr>
-                      <td class="component-name">Endurance</td>
-                      <td>11:15 min</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-              <div class="remarks-section">
-                <h3 class="remarks-title">Remarks</h3>
-                <textarea class="remarks-textarea" placeholder="Enter your remarks...">Excellent improvement across all fitness components! Student has shown great dedication and progress. Continue current training regimen.</textarea>
-                <button class="submit-button">Submit</button>
-              </div>
-            </div>
-          `;
+        // Helper function to format value or show N/A
+        const formatValue = (value, unit = '') => {
+          return value !== null && value !== undefined ? `${value}${unit ? ' ' + unit : ''}` : 'N/A';
+        };
+
+        // Build remarks HTML
+        let remarksHTML = '';
+        if (test.remarks && test.remarks.length > 0) {
+          remarksHTML = test.remarks.map(remark => 
+            `<div style="margin-bottom: 1rem; padding: 0.75rem; background: #f9fafb; border-radius: 8px;">
+              <div style="font-size: 0.75rem; color: #6b7280; margin-bottom: 0.25rem;">${remark.created_at}</div>
+              <div style="font-size: 0.85rem; color: var(--text-dark);">${remark.body}</div>
+            </div>`
+          ).join('');
+        } else {
+          remarksHTML = '<div style="text-align: center; color: var(--text-light); padding: 1rem; font-style: italic;">No remarks given yet</div>';
         }
+
+        // Render the test details
+        panel.innerHTML = `
+          <div class="test-details-content">
+            <h2 class="test-details-title">${test.test_type} Results</h2>
+            <div class="table-wrapper">
+              <table class="test-results-table">
+                <thead>
+                  <tr>
+                    <th>Fitness Component</th>
+                    <th>Value</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="component-name">Body Mass Index (BMI)</td>
+                    <td>${formatValue(test.bmi)}</td>
+                  </tr>
+                  <tr>
+                    <td class="component-name">VO<sub>2</sub> Max</td>
+                    <td>${formatValue(test.vo2_max, 'mL/kg/min')}</td>
+                  </tr>
+                  <tr>
+                    <td class="component-name">Flexibility (Sit & Reach)</td>
+                    <td>${formatValue(test.flexibility_cm, 'cm')}</td>
+                  </tr>
+                  <tr>
+                    <td class="component-name">Strength (Push-ups)</td>
+                    <td>${formatValue(test.strength_reps, 'reps')}</td>
+                  </tr>
+                  <tr>
+                    <td class="component-name">Agility (Hexagon)</td>
+                    <td>${formatValue(test.agility_sec, 'sec')}</td>
+                  </tr>
+                  <tr>
+                    <td class="component-name">Speed (40m Sprint)</td>
+                    <td>${formatValue(test.speed_sec, 'sec')}</td>
+                  </tr>
+                  <tr>
+                    <td class="component-name">Endurance (3-min Step Test)</td>
+                    <td>${test.endurance_display || 'N/A'}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="remarks-section">
+              <h3 class="remarks-title">Remarks</h3>
+              <div style="max-height: 150px; overflow-y: auto;">
+                ${remarksHTML}
+              </div>
+            </div>
+          </div>
+        `;
       }
 
       // Profile Dropdown Functions

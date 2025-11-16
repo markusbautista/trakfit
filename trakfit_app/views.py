@@ -467,10 +467,11 @@ def get_bmi_status(bmi):
 @login_required
 def student_history(request):
     from datetime import datetime
+    import json
     
     student = request.user.student_profile
     
-    # Get all fitness tests for the student
+    # Get all fitness tests for the student, sorted by latest first
     tests = student.fitness_tests.all().order_by('-taken_at')
     
     # Apply filters
@@ -497,18 +498,44 @@ def student_history(request):
         except ValueError:
             pass
     
-    # Add BMI status to each test
-    tests_with_status = []
+    # Prepare test data with BMI, VO2 Max, and remarks for JSON
+    tests_data = []
     for test in tests:
-        test.bmi_status = get_bmi_status(test.bmi)
-        tests_with_status.append(test)
+        # Get remarks for this test
+        remarks = test.remarks.all().order_by('-created_at')
+        remarks_list = [
+            {
+                'body': remark.body,
+                'created_at': remark.created_at.strftime('%B %d, %Y') if remark.created_at else 'N/A'
+            }
+            for remark in remarks
+        ]
+        
+        test_dict = {
+            'test_id': test.test_id,
+            'test_type': test.get_test_type_display(),
+            'test_type_key': test.test_type,
+            'taken_at': test.taken_at.strftime('%B %d, %Y') if test.taken_at else 'N/A',
+            'bmi': round(test.bmi, 1) if test.bmi else None,
+            'vo2_max': round(test.vo2_max, 1) if test.vo2_max else None,
+            'height_cm': float(test.height_cm) if test.height_cm else None,
+            'weight_kg': float(test.weight_kg) if test.weight_kg else None,
+            'flexibility_cm': float(test.flexibility_cm) if test.flexibility_cm else None,
+            'strength_reps': test.strength_reps,
+            'agility_sec': float(test.agility_sec) if test.agility_sec else None,
+            'speed_sec': float(test.speed_sec) if test.speed_sec else None,
+            'endurance_display': test.get_endurance_display(),
+            'remarks': remarks_list,
+        }
+        tests_data.append(test_dict)
     
     # Get pre-test for button lock check
     pre_test = student.fitness_tests.filter(test_type='pre').order_by('-taken_at').first()
     
     context = {
         'student': student,
-        'tests': tests_with_status,
+        'tests': tests,
+        'tests_json': json.dumps(tests_data),
         'test_type_filter': test_type,
         'start_date_filter': start_date,
         'end_date_filter': end_date,
