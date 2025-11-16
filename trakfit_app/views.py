@@ -64,7 +64,7 @@ def register(request):
         # Validation
         errors = []
         
-        if not all([student_no, first_name, last_name, birthday, section_code, email, gender, password]):
+        if not all([student_no, first_name, last_name, birthday, section_code, group_code, email, gender, password]):
             errors.append('All fields are required.')
         
         if password != confirm_password:
@@ -118,7 +118,7 @@ def register(request):
                 age=age,
                 gender=gender,
                 section_code=section_code,
-                group_code=group_code if group_code else None,
+                group_code=group_code,
             )
             
             # Auto-login the user
