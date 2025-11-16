@@ -287,8 +287,45 @@ def student_profile_view(request):
     pre_test_count = student.fitness_tests.filter(test_type='pre').count()
     post_test_count = student.fitness_tests.filter(test_type='post').count()
     
-    # Get pre-test for button lock check
+    # Get pre-test for button lock check and comparison
     pre_test = student.fitness_tests.filter(test_type='pre').order_by('-taken_at').first()
+    
+    # Prepare comparison data for latest test
+    pre_test_data = None
+    previous_test_data = None
+    
+    if latest_test:
+        # Build pre-test data
+        if pre_test:
+            pre_test_data = {
+                'bmi': round(pre_test.bmi, 1) if pre_test.bmi else None,
+                'vo2_max': round(pre_test.vo2_max, 1) if pre_test.vo2_max else None,
+                'flexibility_cm': float(pre_test.flexibility_cm) if pre_test.flexibility_cm else None,
+                'strength_reps': pre_test.strength_reps,
+                'agility_sec': float(pre_test.agility_sec) if pre_test.agility_sec else None,
+                'speed_sec': float(pre_test.speed_sec) if pre_test.speed_sec else None,
+                'endurance_display': pre_test.get_endurance_display(),
+            }
+        
+        # Get all tests ordered by date to find previous test
+        all_tests_ordered = list(student.fitness_tests.all().order_by('-taken_at'))
+        
+        # Find previous test (the one before latest_test)
+        try:
+            current_test_index = next(i for i, t in enumerate(all_tests_ordered) if t.test_id == latest_test.test_id)
+            if current_test_index + 1 < len(all_tests_ordered):
+                previous_test = all_tests_ordered[current_test_index + 1]
+                previous_test_data = {
+                    'bmi': round(previous_test.bmi, 1) if previous_test.bmi else None,
+                    'vo2_max': round(previous_test.vo2_max, 1) if previous_test.vo2_max else None,
+                    'flexibility_cm': float(previous_test.flexibility_cm) if previous_test.flexibility_cm else None,
+                    'strength_reps': previous_test.strength_reps,
+                    'agility_sec': float(previous_test.agility_sec) if previous_test.agility_sec else None,
+                    'speed_sec': float(previous_test.speed_sec) if previous_test.speed_sec else None,
+                    'endurance_display': previous_test.get_endurance_display(),
+                }
+        except StopIteration:
+            pass
     
     context = {
         'student': student,
@@ -297,6 +334,8 @@ def student_profile_view(request):
         'pre_test_count': pre_test_count,
         'post_test_count': post_test_count,
         'pre_test': pre_test,
+        'pre_test_data': pre_test_data,
+        'previous_test_data': previous_test_data,
     }
     return render(request, 'student/profile.html', context)
 
@@ -495,9 +534,15 @@ def student_history(request):
         except ValueError:
             pass
     
-    # Prepare test data with BMI, VO2 Max, and remarks for JSON
+    # Get pre-test (only one per student ever)
+    pre_test = student.fitness_tests.filter(test_type='pre').order_by('-taken_at').first()
+    
+    # Get all tests ordered by date for finding previous test
+    all_tests_ordered = list(student.fitness_tests.all().order_by('-taken_at'))
+    
+    # Prepare test data with BMI, VO2 Max, remarks, pre-test, and previous test for JSON
     tests_data = []
-    for test in tests:
+    for idx, test in enumerate(tests):
         # Get remarks for this test
         remarks = test.remarks.all().order_by('-created_at')
         remarks_list = [
@@ -508,11 +553,51 @@ def student_history(request):
             for remark in remarks
         ]
         
+        # Build pre-test data
+        pre_test_data = None
+        if pre_test:
+            pre_test_data = {
+                'test_id': pre_test.test_id,
+                'bmi': round(pre_test.bmi, 1) if pre_test.bmi else None,
+                'vo2_max': round(pre_test.vo2_max, 1) if pre_test.vo2_max else None,
+                'height_cm': float(pre_test.height_cm) if pre_test.height_cm else None,
+                'weight_kg': float(pre_test.weight_kg) if pre_test.weight_kg else None,
+                'flexibility_cm': float(pre_test.flexibility_cm) if pre_test.flexibility_cm else None,
+                'strength_reps': pre_test.strength_reps,
+                'agility_sec': float(pre_test.agility_sec) if pre_test.agility_sec else None,
+                'speed_sec': float(pre_test.speed_sec) if pre_test.speed_sec else None,
+                'endurance_display': pre_test.get_endurance_display(),
+            }
+        
+        # Find previous test (the one taken before the current test)
+        previous_test_data = None
+        try:
+            # Find the current test in the all_tests_ordered list
+            current_test_index = next(i for i, t in enumerate(all_tests_ordered) if t.test_id == test.test_id)
+            # Previous test is the next one in the list (since list is sorted by -taken_at)
+            if current_test_index + 1 < len(all_tests_ordered):
+                previous_test = all_tests_ordered[current_test_index + 1]
+                previous_test_data = {
+                    'test_id': previous_test.test_id,
+                    'bmi': round(previous_test.bmi, 1) if previous_test.bmi else None,
+                    'vo2_max': round(previous_test.vo2_max, 1) if previous_test.vo2_max else None,
+                    'height_cm': float(previous_test.height_cm) if previous_test.height_cm else None,
+                    'weight_kg': float(previous_test.weight_kg) if previous_test.weight_kg else None,
+                    'flexibility_cm': float(previous_test.flexibility_cm) if previous_test.flexibility_cm else None,
+                    'strength_reps': previous_test.strength_reps,
+                    'agility_sec': float(previous_test.agility_sec) if previous_test.agility_sec else None,
+                    'speed_sec': float(previous_test.speed_sec) if previous_test.speed_sec else None,
+                    'endurance_display': previous_test.get_endurance_display(),
+                }
+        except StopIteration:
+            pass
+        
         test_dict = {
             'test_id': test.test_id,
             'test_type': test.get_test_type_display(),
             'test_type_key': test.test_type,
             'taken_at': test.taken_at.strftime('%B %d, %Y') if test.taken_at else 'N/A',
+            'updated_at': test.updated_at.strftime('%B %d, %Y') if test.updated_at else 'N/A',
             'bmi': round(test.bmi, 1) if test.bmi else None,
             'vo2_max': round(test.vo2_max, 1) if test.vo2_max else None,
             'height_cm': float(test.height_cm) if test.height_cm else None,
@@ -523,11 +608,10 @@ def student_history(request):
             'speed_sec': float(test.speed_sec) if test.speed_sec else None,
             'endurance_display': test.get_endurance_display(),
             'remarks': remarks_list,
+            'pre_test': pre_test_data,
+            'previous_test': previous_test_data,
         }
         tests_data.append(test_dict)
-    
-    # Get pre-test for button lock check
-    pre_test = student.fitness_tests.filter(test_type='pre').order_by('-taken_at').first()
     
     context = {
         'student': student,

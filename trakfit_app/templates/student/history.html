@@ -400,12 +400,40 @@
         color: var(--text-light);
       }
 
+      .test-details-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+        flex-shrink: 0;
+        gap: 1rem;
+      }
+
       .test-details-title {
         font-size: clamp(1.1rem, 1.3vw, 1.3rem);
         font-weight: 700;
         color: var(--text-dark);
-        margin-bottom: 1rem;
-        flex-shrink: 0;
+        margin: 0;
+      }
+
+      .test-details-meta {
+        text-align: right;
+        font-size: clamp(0.8rem, 0.9vw, 0.9rem);
+        color: var(--text-dark);
+        line-height: 1.5;
+      }
+
+      .test-details-meta div {
+        margin-bottom: 0.25rem;
+      }
+
+      .test-details-meta div:last-child {
+        margin-bottom: 0;
+      }
+
+      .test-details-meta .updated-at {
+        font-size: clamp(0.7rem, 0.8vw, 0.8rem);
+        color: #6b7280;
       }
 
       .test-results-table {
@@ -421,11 +449,11 @@
 
       .test-results-table th {
         background: #F5F4F5;
-        padding: 0.75rem 1.5rem;
-        text-align: center;
+        padding: 0.65rem 1rem;
+        text-align: left;
         font-weight: 600;
         color: var(--text-dark);
-        font-size: clamp(0.8rem, 0.9vw, 0.9rem);
+        font-size: clamp(0.75rem, 0.85vw, 0.85rem);
         border-bottom: 1px solid #E5E7EB;
       }
 
@@ -446,12 +474,12 @@
       }
 
       .test-results-table td {
-        padding: 0.65rem 1.5rem;
+        padding: 0.65rem 1rem;
         border-bottom: 1px solid #E5E7EB;
-        font-size: clamp(0.8rem, 0.9vw, 0.9rem);
+        font-size: clamp(0.75rem, 0.85vw, 0.85rem);
         color: var(--text-dark);
         background: white;
-        text-align: center;
+        text-align: left;
       }
 
       .test-results-table tbody tr:last-child td {
@@ -461,6 +489,37 @@
       .component-name {
         font-weight: 500;
         color: var(--text-dark);
+        text-align: left;
+        padding-left: 1.5rem;
+      }
+
+      .current-test-col {
+        font-weight: 600;
+      }
+
+      .difference {
+        font-size: 0.85em;
+        font-weight: 600;
+        margin-left: 0.25rem;
+      }
+
+      .difference-positive {
+        color: #16a34a;
+      }
+
+      .difference-negative {
+        color: #dc2626;
+      }
+
+      .difference-neutral {
+        color: #6b7280;
+      }
+
+      /* Hide Previous Test column on mobile */
+      @media (max-width: 576px) {
+        .previous-test-col {
+          display: none;
+        }
       }
 
       .remarks-section {
@@ -757,8 +816,74 @@
 
         // Helper function to format value or show N/A
         const formatValue = (value, unit = '') => {
-          return value !== null && value !== undefined ? `${value}${unit ? ' ' + unit : ''}` : 'N/A';
+          if (value === null || value === undefined) return 'N/A';
+          const formattedValue = typeof value === 'number' ? value.toFixed(2) : value;
+          return `${formattedValue}${unit ? ' ' + unit : ''}`;
         };
+
+        // Helper function to safely get test value from nested object
+        const getTestValue = (testData, field, unit = '') => {
+          if (!testData) return 'N/A';
+          return formatValue(testData[field], unit);
+        };
+
+        // Helper function to calculate difference between current and comparison value
+        const calculateDifference = (current, comparison, lowerIsBetter = false) => {
+          if (current === null || current === undefined || comparison === null || comparison === undefined) {
+            return null;
+          }
+          const diff = current - comparison;
+          if (diff === 0) return { value: 0, isPositive: null };
+          
+          // For metrics where lower is better (BMI, agility, speed), flip the logic
+          const isImprovement = lowerIsBetter ? diff < 0 : diff > 0;
+          return { value: Math.abs(diff).toFixed(1), isPositive: isImprovement };
+        };
+
+        // Helper function to format value with difference indicator
+        const formatWithDifference = (current, comparison, unit = '', lowerIsBetter = false) => {
+          const valueStr = formatValue(current, unit);
+          const diff = calculateDifference(current, comparison, lowerIsBetter);
+          
+          if (!diff) return valueStr;
+          
+          const sign = diff.isPositive ? '+' : '-';
+          const colorClass = diff.isPositive ? 'difference-positive' : 'difference-negative';
+          
+          return `${valueStr} <span class="difference ${colorClass}">(${sign}${diff.value})</span>`;
+        };
+
+        // Helper function to convert endurance time (mm:ss) to seconds
+        const convertEnduranceToSeconds = (timeStr) => {
+          if (!timeStr || timeStr === 'N/A') return null;
+          const parts = timeStr.split(':');
+          if (parts.length !== 2) return null;
+          const minutes = parseInt(parts[0], 10);
+          const seconds = parseInt(parts[1], 10);
+          if (isNaN(minutes) || isNaN(seconds)) return null;
+          return minutes * 60 + seconds;
+        };
+
+        // Helper function to format endurance with difference
+        const formatEnduranceWithDifference = (currentTime, comparisonTime) => {
+          if (!currentTime || currentTime === 'N/A') return 'N/A';
+          
+          const currentSeconds = convertEnduranceToSeconds(currentTime);
+          const comparisonSeconds = convertEnduranceToSeconds(comparisonTime);
+          
+          if (!comparisonSeconds) return currentTime;
+          
+          const diff = calculateDifference(currentSeconds, comparisonSeconds, true);
+          if (!diff) return currentTime;
+          
+          const sign = diff.isPositive ? '+' : '-';
+          const colorClass = diff.isPositive ? 'difference-positive' : 'difference-negative';
+          
+          return `${currentTime} <span class="difference ${colorClass}">(${sign}${diff.value}s)</span>`;
+        };
+
+        // Check if current test is the pre-test
+        const isPreTest = test.test_type_key === 'pre';
 
         // Build remarks HTML
         let remarksHTML = '';
@@ -776,43 +901,65 @@
         // Render the test details
         panel.innerHTML = `
           <div class="test-details-content">
-            <h2 class="test-details-title">${test.test_type} Results</h2>
+            <div class="test-details-header">
+              <h2 class="test-details-title">${test.test_type} Results #${test.test_id}</h2>
+              <div class="test-details-meta">
+                <div><strong>Taken at:</strong> ${test.taken_at}</div>
+                <div class="updated-at"><strong>Updated at:</strong> ${test.updated_at}</div>
+              </div>
+            </div>
             <div class="table-wrapper">
               <table class="test-results-table">
                 <thead>
                   <tr>
                     <th>Fitness Component</th>
-                    <th>Value</th>
+                    <th class="current-test-col">Current Value</th>
+                    <th class="previous-test-col">Previous Test</th>
+                    <th>Pre-Test</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
                     <td class="component-name">Body Mass Index (BMI)</td>
-                    <td>${formatValue(test.bmi)}</td>
+                    <td class="current-test-col">${formatValue(test.bmi)}</td>
+                    <td class="previous-test-col">${isPreTest ? 'N/A' : formatWithDifference(test.bmi, test.previous_test?.bmi, '', true)}</td>
+                    <td>${formatWithDifference(test.bmi, test.pre_test?.bmi, '', true)}</td>
                   </tr>
                   <tr>
                     <td class="component-name">VO<sub>2</sub> Max</td>
-                    <td>${formatValue(test.vo2_max, 'mL/kg/min')}</td>
+                    <td class="current-test-col">${formatValue(test.vo2_max, 'mL/kg/min')}</td>
+                    <td class="previous-test-col">${isPreTest ? 'N/A' : formatWithDifference(test.vo2_max, test.previous_test?.vo2_max, 'mL/kg/min', false)}</td>
+                    <td>${formatWithDifference(test.vo2_max, test.pre_test?.vo2_max, 'mL/kg/min', false)}</td>
                   </tr>
                   <tr>
                     <td class="component-name">Flexibility (Sit & Reach)</td>
-                    <td>${formatValue(test.flexibility_cm, 'cm')}</td>
+                    <td class="current-test-col">${formatValue(test.flexibility_cm, 'cm')}</td>
+                    <td class="previous-test-col">${isPreTest ? 'N/A' : formatWithDifference(test.flexibility_cm, test.previous_test?.flexibility_cm, 'cm', false)}</td>
+                    <td>${formatWithDifference(test.flexibility_cm, test.pre_test?.flexibility_cm, 'cm', false)}</td>
                   </tr>
                   <tr>
                     <td class="component-name">Strength (Push-ups)</td>
-                    <td>${formatValue(test.strength_reps, 'reps')}</td>
+                    <td class="current-test-col">${formatValue(test.strength_reps, 'reps')}</td>
+                    <td class="previous-test-col">${isPreTest ? 'N/A' : formatWithDifference(test.strength_reps, test.previous_test?.strength_reps, 'reps', false)}</td>
+                    <td>${formatWithDifference(test.strength_reps, test.pre_test?.strength_reps, 'reps', false)}</td>
                   </tr>
                   <tr>
                     <td class="component-name">Agility (Hexagon)</td>
-                    <td>${formatValue(test.agility_sec, 'sec')}</td>
+                    <td class="current-test-col">${formatValue(test.agility_sec, 'sec')}</td>
+                    <td class="previous-test-col">${isPreTest ? 'N/A' : formatWithDifference(test.agility_sec, test.previous_test?.agility_sec, 'sec', true)}</td>
+                    <td>${formatWithDifference(test.agility_sec, test.pre_test?.agility_sec, 'sec', true)}</td>
                   </tr>
                   <tr>
                     <td class="component-name">Speed (40m Sprint)</td>
-                    <td>${formatValue(test.speed_sec, 'sec')}</td>
+                    <td class="current-test-col">${formatValue(test.speed_sec, 'sec')}</td>
+                    <td class="previous-test-col">${isPreTest ? 'N/A' : formatWithDifference(test.speed_sec, test.previous_test?.speed_sec, 'sec', true)}</td>
+                    <td>${formatWithDifference(test.speed_sec, test.pre_test?.speed_sec, 'sec', true)}</td>
                   </tr>
                   <tr>
                     <td class="component-name">Endurance (3-min Step Test)</td>
-                    <td>${test.endurance_display || 'N/A'}</td>
+                    <td class="current-test-col">${test.endurance_display || 'N/A'}</td>
+                    <td class="previous-test-col">${isPreTest ? 'N/A' : formatEnduranceWithDifference(test.endurance_display, test.previous_test?.endurance_display)}</td>
+                    <td>${formatEnduranceWithDifference(test.endurance_display, test.pre_test?.endurance_display)}</td>
                   </tr>
                 </tbody>
               </table>
