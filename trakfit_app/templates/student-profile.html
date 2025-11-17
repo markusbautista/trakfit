@@ -332,7 +332,7 @@
 
         .test-history-container {
             display: grid;
-            grid-template-columns: 220px 1fr;
+            grid-template-columns: 1fr 4fr;
             gap: 1.5rem;
             height: 100%;
         }
@@ -695,14 +695,14 @@
                         <div class="test-item" onclick="showTestDetails('pre-test', event)">
                             <div class="test-item-content">
                                 <div class="test-type">Pre-Test</div>
-                                <div class="test-date">August 15, 2025</div>
+                                <div class="test-date">{{ pre_test.created_at | date:"F j, Y" }}</div>
                             </div>
                             <button class="view-button">View</button>
                         </div>
                         <div class="test-item" onclick="showTestDetails('post-test', event)">
                             <div class="test-item-content">
                                 <div class="test-type">Post-Test</div>
-                                <div class="test-date">August 15, 2025</div>
+                                <div class="test-date">{{ post_test.created_at | date:"F j, Y" }}</div>
                             </div>
                             <button class="view-button">View</button>
                         </div>
@@ -761,31 +761,31 @@
                                 <tbody>
                                     <tr>
                                         <td class="component-name">Body Mass Index (BMI)</td>
-                                        <td>24.5</td>
+                                        <td>{{ pre_test.bmi | floatformat:2}}</td>
                                     </tr>
                                     <tr>
                                         <td class="component-name">VO<sub>2</sub> Max</td>
-                                        <td>42.5 mL/kg/min</td>
+                                        <td>{{ pre_test.vo2_max | floatformat:2}} mL/kg/min</td>
                                     </tr>
                                     <tr>
                                         <td class="component-name">Flexibility</td>
-                                        <td>12 cm</td>
+                                        <td>{{ pre_test.flexibility_cm | floatformat:2 }} cm</td>
                                     </tr>
                                     <tr>
                                         <td class="component-name">Strength</td>
-                                        <td>25 push-ups</td>
+                                        <td>{{ pre_test.strength_reps }} push-ups</td>
                                     </tr>
                                     <tr>
                                         <td class="component-name">Agility</td>
-                                        <td>17.8 sec</td>
+                                        <td>{{ pre_test.agility_sec | floatformat:2 }}</td>
                                     </tr>
                                     <tr>
                                         <td class="component-name">Speed</td>
-                                        <td>5.9 sec</td>
+                                        <td>{{ pre_test.speed_sec | floatformat:2 }}</td>
                                     </tr>
                                     <tr>
                                         <td class="component-name">Endurance</td>
-                                        <td>12:30 min</td>
+                                        <td> {{ pre_test.get_endurance_display }} min</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -812,31 +812,31 @@
                                 <tbody>
                                     <tr>
                                         <td class="component-name">Body Mass Index (BMI)</td>
-                                        <td>24.2</td>
+                                        <td>{{ post_test.bmi | floatformat:2}}</td>
                                     </tr>
                                     <tr>
                                         <td class="component-name">VO<sub>2</sub> Max</td>
-                                        <td>46.1 mL/kg/min</td>
+                                        <td>{{ post_test.vo2_max | floatformat:2}} mL/kg/min</td>
                                     </tr>
                                     <tr>
                                         <td class="component-name">Flexibility</td>
-                                        <td>15 cm</td>
+                                        <td>{{ post_test.flexibility_cm | floatformat:2 }} cm</td>
                                     </tr>
                                     <tr>
                                         <td class="component-name">Strength</td>
-                                        <td>35 push-ups</td>
+                                        <td>{{ post_test.strength_reps }} push-ups</td>
                                     </tr>
                                     <tr>
                                         <td class="component-name">Agility</td>
-                                        <td>16.9 sec</td>
+                                        <td>{{ post_test.agility_sec | floatformat:2 }}</td>
                                     </tr>
                                     <tr>
                                         <td class="component-name">Speed</td>
-                                        <td>5.6 sec</td>
+                                        <td>{{ post_test.speed_sec | floatformat:2 }}</td>
                                     </tr>
                                     <tr>
                                         <td class="component-name">Endurance</td>
-                                        <td>11:15 min</td>
+                                        <td> {{ post_test.get_endurance_display }} min</td>
                                     </tr>
                                 </tbody>
                             </table>
