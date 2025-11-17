@@ -359,6 +359,7 @@
         background: var(--card-bg);
         border-radius: 20px;
         padding: 2rem;
+        margin-top: 3rem;
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
         overflow: hidden;
         display: flex;
@@ -834,7 +835,7 @@
           }
           const diff = current - comparison;
           if (diff === 0) return { value: 0, isPositive: null };
-          
+
           // For metrics where lower is better (BMI, agility, speed), flip the logic
           const isImprovement = lowerIsBetter ? diff < 0 : diff > 0;
           return { value: Math.abs(diff).toFixed(1), isPositive: isImprovement };
@@ -844,12 +845,12 @@
         const formatWithDifference = (current, comparison, unit = '', lowerIsBetter = false) => {
           const valueStr = formatValue(current, unit);
           const diff = calculateDifference(current, comparison, lowerIsBetter);
-          
+
           if (!diff) return valueStr;
-          
+
           const sign = diff.isPositive ? '+' : '-';
           const colorClass = diff.isPositive ? 'difference-positive' : 'difference-negative';
-          
+
           return `${valueStr} <span class="difference ${colorClass}">(${sign}${diff.value})</span>`;
         };
 
@@ -867,18 +868,18 @@
         // Helper function to format endurance with difference
         const formatEnduranceWithDifference = (currentTime, comparisonTime) => {
           if (!currentTime || currentTime === 'N/A') return 'N/A';
-          
+
           const currentSeconds = convertEnduranceToSeconds(currentTime);
           const comparisonSeconds = convertEnduranceToSeconds(comparisonTime);
-          
+
           if (!comparisonSeconds) return currentTime;
-          
+
           const diff = calculateDifference(currentSeconds, comparisonSeconds, true);
           if (!diff) return currentTime;
-          
+
           const sign = diff.isPositive ? '+' : '-';
           const colorClass = diff.isPositive ? 'difference-positive' : 'difference-negative';
-          
+
           return `${currentTime} <span class="difference ${colorClass}">(${sign}${diff.value}s)</span>`;
         };
 
@@ -888,7 +889,7 @@
         // Build remarks HTML
         let remarksHTML = '';
         if (test.remarks && test.remarks.length > 0) {
-          remarksHTML = test.remarks.map(remark => 
+          remarksHTML = test.remarks.map(remark =>
             `<div style="margin-bottom: 1rem; padding: 0.75rem; background: #f9fafb; border-radius: 8px;">
               <div style="font-size: 0.75rem; color: #6b7280; margin-bottom: 0.25rem;">${remark.created_at}</div>
               <div style="font-size: 0.85rem; color: var(--text-dark);">${remark.body}</div>

@@ -29,21 +29,11 @@
         --input-bg: #f3f3f3;
       }
 
-      * {
-        box-sizing: border-box;
-      }
-
-      html, body {
-        height: 100%;
-        margin: 0;
-        padding: 0;
-        overflow: hidden;
-      }
-
       body {
         font-family: "Sarabun", sans-serif;
-        display: flex;
-        flex-direction: column;
+        height: 100vh;
+        margin: 0;
+        overflow: hidden;
       }
 
       .brand-font {
@@ -52,8 +42,7 @@
 
       .split-container {
         display: flex;
-        flex: 1;
-        min-height: 0;
+        height: 100vh;
       }
 
       .left-side {
@@ -62,8 +51,7 @@
         align-items: center;
         justify-content: center;
         flex: 1;
-        padding: 1rem;
-        overflow: hidden;
+        padding: 2rem;
       }
 
       .right-side {
@@ -71,33 +59,32 @@
         display: flex;
         flex-direction: column;
         flex: 1;
-        padding: 1rem;
+        padding: 2rem;
         position: relative;
-        overflow: hidden;
       }
 
       .welcome-text {
         color: var(--primary-color);
-        font-size: clamp(1.8rem, 4vw, 3.5rem);
+        font-size: 2.5rem;
         font-weight: 700;
         text-align: center;
-        margin: 0.5rem 0;
+        margin-bottom: 0.5rem;
       }
 
       .subtitle {
         color: var(--dark-text);
-        font-size: clamp(0.9rem, 2vw, 1.2rem);
+        font-size: 1.1rem;
         text-align: center;
-        margin-bottom: 1.5rem;
+        margin-bottom: 2rem;
       }
 
       .form-control-custom {
         background-color: var(--input-bg);
         border: none;
         border-radius: 40px;
-        height: clamp(45px, 6vh, 55px);
+        height: 50px;
         padding: 0 20px;
-        font-size: clamp(0.9rem, 2vw, 1.1rem);
+        font-size: 1rem;
         width: 100%;
       }
 
@@ -109,49 +96,15 @@
         background-color: var(--primary-color);
         border: none;
         border-radius: 40px;
-        height: clamp(45px, 6vh, 55px);
+        height: 50px;
         color: white;
-        font-size: clamp(0.9rem, 2vw, 1.1rem);
+        font-size: 1rem;
         font-weight: 600;
         width: 100%;
       }
 
-      .forgot-password {
-        color: var(--dark-text);
-        font-size: clamp(0.8rem, 1.5vw, 1rem);
-      }
-
-      .divider {
-        flex: 1;
-        height: 1px;
-        background-color: var(--primary-color);
-      }
-
-      .divider-text {
-        color: var(--dark-text);
-        padding: 0 10px;
-        font-size: clamp(0.9rem, 2vw, 1.2rem);
-        font-weight: 500;
-      }
-
-      .social-icon {
-        width: clamp(40px, 6vw, 62px);
-        height: clamp(40px, 6vw, 62px);
-        border-radius: 50%;
-        background-color: var(--primary-color);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        text-decoration: none;
-      }
-
-      .social-icon img {
-        width: clamp(25px, 4vw, 40px);
-        height: clamp(25px, 4vw, 40px);
-      }
-
       .signup-text {
-        font-size: clamp(0.9rem, 2vw, 1.2rem);
+        font-size: 1rem;
       }
 
       .signup-link {
@@ -162,7 +115,6 @@
 
       .password-wrapper {
         position: relative;
-        display: inline-block;
         width: 100%;
       }
 
@@ -174,41 +126,19 @@
         cursor: pointer;
         color: rgba(44, 62, 80, 0.6);
         font-size: 1.2rem;
-        z-index: 10;
-        user-select: none;
-        line-height: 1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        pointer-events: auto;
       }
 
       .password-toggle:hover {
         color: rgba(44, 62, 80, 0.9);
       }
 
-      .form-control-custom.is-invalid:focus {
-        border: 2px solid #dc3545;
-      }
-
-      .form-control-custom.is-valid:focus {
-        border: 2px solid #198754;
-      }
-
-      /* Remove Bootstrap's default validation icons */
-      .form-control-custom.is-valid,
-      .form-control-custom.is-invalid {
-        background-image: none !important;
-      }
-      
-      /* Ensure password field has proper padding for eye icon */
       .password-wrapper .form-control-custom {
         padding-right: 50px;
       }
 
       .error-message {
         color: #dc3545;
-        font-size: clamp(0.75rem, 1.5vw, 0.875rem);
+        font-size: 0.875rem;
         margin-top: 0.25rem;
         margin-left: 20px;
         display: none;
@@ -218,50 +148,32 @@
         display: block;
       }
 
-      .help-text {
-        color: rgba(44, 62, 80, 0.6);
-        font-size: clamp(0.75rem, 1.5vw, 0.875rem);
-        margin-top: 0.25rem;
-        margin-left: 20px;
-      }
-
       .brand-logo {
-        width: clamp(60px, 10vw, 100px);
-        height: clamp(60px, 10vw, 100px);
-        background-color: #d9d9d9;
-        border-radius: 50%;
+        width: 80px;
+        height: 80px;
       }
 
       .brand-name {
         color: var(--primary-color);
-        font-size: clamp(1.5rem, 4vw, 2.5rem);
+        font-size: 2rem;
         font-weight: 700;
-        line-height: 1;
       }
 
       .brand-header {
         display: flex;
         align-items: center;
-        padding: 0.5rem 0;
-        width: auto;
-        z-index: 10;
         justify-content: center;
-        margin-bottom: 1rem;
+        margin-bottom: 2rem;
       }
 
       .form-content-container {
-        width: min(90%, 500px);
+        max-width: 400px;
+        width: 100%;
+        margin: 0 auto;
         display: flex;
         flex-direction: column;
-        align-items: center;
-        margin: auto;
         justify-content: center;
         flex: 1;
-        padding: 0.5rem 0;
-      }
-
-      .form-content-container form {
-        width: 100%;
       }
 
       /* Modal-style message overlay */
@@ -287,7 +199,6 @@
         width: 100%;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         text-align: center;
-        position: relative;
       }
 
       .message-icon {
@@ -325,7 +236,6 @@
         padding: 0.75rem 2rem;
         font-weight: 600;
         cursor: pointer;
-        transition: background-color 0.3s;
       }
 
       .message-close-btn:hover {
@@ -342,81 +252,45 @@
       @media (max-width: 992px) {
         .split-container {
           flex-direction: column;
+          height: auto;
+          min-height: 100vh;
         }
 
-        .left-side, .right-side {
-          flex: none;
+        .left-side {
           min-height: 40vh;
+          padding: 1rem;
         }
 
         .right-side {
           min-height: 60vh;
+          padding: 1rem;
+        }
+
+        .welcome-text {
+          font-size: 2rem;
+        }
+
+        .brand-name {
+          font-size: 1.5rem;
         }
       }
 
-      /* Extra small screens */
       @media (max-width: 576px) {
-        .left-side, .right-side {
-          min-height: 35vh;
-        }
-
-        .right-side {
-          min-height: 65vh;
-        }
-
         .brand-header {
           flex-direction: column;
           text-align: center;
         }
 
         .brand-logo {
-          margin-right: 0;
           margin-bottom: 0.5rem;
         }
 
-        .message-modal {
-          padding: 1.5rem;
-          margin: 1rem;
-        }
-
-        .message-icon {
-          font-size: 2.5rem;
-        }
-      }
-
-      /* Very small screens */
-      @media (max-height: 700px) {
-        .form-content-container {
-          padding: 0.25rem 0;
-        }
-
         .welcome-text {
-          margin: 0.25rem 0;
+          font-size: 1.8rem;
         }
 
         .subtitle {
-          margin-bottom: 1rem;
-        }
-
-        .mb-3 {
-          margin-bottom: 0.75rem !important;
-        }
-
-        .mb-4 {
-          margin-bottom: 1rem !important;
-        }
-      }
-
-      /* Ultra small screens */
-      @media (max-height: 600px) {
-        .form-content-container {
-          justify-content: flex-start;
-          overflow-y: auto;
-          padding: 0.5rem 0;
-        }
-
-        .right-side {
-          overflow-y: hidden;
+          font-size: 1rem;
         }
       }
     </style>
@@ -457,11 +331,11 @@
       <!-- Right Side (White Background) -->
       <div class="right-side">
         <div class="brand-header">
-          <div class="brand-logo me-2 me-md-3">
-              <img
-            src="{% static 'logo-noname-transparent.png' %}"
-            alt="Logo"
-            class="left-image"
+          <div class="brand-logo me-3">
+            <img
+              src="{% static 'logo-noname-transparent.png' %}"
+              alt="Logo"
+              style="width: 100%; height: 100%; object-fit: contain;"
             />
           </div>
           <div class="brand-name brand-font">TrakFit</div>
@@ -496,13 +370,11 @@
                   id="passwordInput"
                   class="form-control form-control-custom"
                   placeholder="Password"
-                  minlength="8"
                   required
                 />
                 <i class="bi bi-eye-slash password-toggle" id="togglePassword"></i>
               </div>
               <div class="error-message" id="passwordError"></div>
-              <div class="help-text" id="passwordHelp">Must be at least 8 characters</div>
             </div>
             <div class="mb-3">
               <button
@@ -512,31 +384,7 @@
                 Sign In
               </button>
             </div>
-            <div class="text-end mb-4">
-              <a
-                href="{% url 'resetPassword' %}"
-                class="forgot-password text-decoration-none"
-                >Forgot Password?</a
-              >
-            </div>
           </form>
-
-          <!-- Divider with "or continue with" -->
-          <div class="d-flex align-items-center mb-3 w-100">
-            <div class="divider"></div>
-            <div class="divider-text">or continue with</div>
-            <div class="divider"></div>
-          </div>
-
-          <!-- Social Login Buttons -->
-          <div class="d-flex justify-content-center mb-4">
-            <a href="#" class="social-icon me-3">
-              <img src="{% static 'google.png' %}" alt="Google Logo" />
-            </a>
-            <a href="#" class="social-icon">
-              <img src="{% static 'facebook.png' %}" alt="Facebook Logo" />
-            </a>
-          </div>
 
           <!-- Sign Up Link -->
           <div class="text-center signup-text">
@@ -569,8 +417,6 @@
       // Close message when clicking outside the modal
       document.addEventListener('click', function(event) {
         const messageOverlay = document.querySelector('.message-overlay');
-        const messageModal = document.querySelector('.message-modal');
-
         if (messageOverlay && event.target === messageOverlay) {
           closeMessage();
         }
@@ -582,11 +428,8 @@
 
       if (togglePassword && passwordInput) {
         togglePassword.addEventListener('click', function() {
-          // Toggle the type attribute
           const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
           passwordInput.setAttribute('type', type);
-          
-          // Toggle the icon
           this.classList.toggle('bi-eye');
           this.classList.toggle('bi-eye-slash');
         });
@@ -597,39 +440,25 @@
       const emailInput = document.getElementById('emailInput');
       const emailError = document.getElementById('emailError');
       const passwordError = document.getElementById('passwordError');
-      const passwordHelp = document.getElementById('passwordHelp');
 
-      // Email validation function
       function validateEmail(email) {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return emailRegex.test(email);
       }
 
-      // Show error message
       function showError(input, errorElement, message) {
         input.classList.add('is-invalid');
-        input.classList.remove('is-valid');
         errorElement.textContent = message;
         errorElement.classList.add('show');
       }
 
-      // Show success state (no visual indicator except on focus)
       function showSuccess(input, errorElement) {
         input.classList.remove('is-invalid');
-        input.classList.add('is-valid');
         errorElement.classList.remove('show');
       }
 
-      // Clear validation state
-      function clearValidation(input, errorElement) {
-        input.classList.remove('is-invalid', 'is-valid');
-        errorElement.classList.remove('show');
-      }
-
-      // Validate email field
       function checkEmail() {
         const email = emailInput.value.trim();
-        
         if (email === '') {
           showError(emailInput, emailError, 'Email is required');
           return false;
@@ -642,59 +471,22 @@
         }
       }
 
-      // Validate password field
       function checkPassword() {
         const password = passwordInput.value;
-        
         if (password === '') {
           showError(passwordInput, passwordError, 'Password is required');
-          passwordHelp.style.display = 'none';
-          return false;
-        } else if (password.length < 8) {
-          showError(passwordInput, passwordError, 'Password must be at least 8 characters');
-          passwordHelp.style.display = 'none';
           return false;
         } else {
           showSuccess(passwordInput, passwordError);
-          passwordHelp.style.display = 'block';
           return true;
         }
       }
 
-      // Real-time validation on input
-      emailInput.addEventListener('input', function() {
-        if (this.value.length > 0) {
-          checkEmail();
-        } else {
-          clearValidation(emailInput, emailError);
-        }
-      });
+      emailInput.addEventListener('input', checkEmail);
+      emailInput.addEventListener('blur', checkEmail);
+      passwordInput.addEventListener('input', checkPassword);
+      passwordInput.addEventListener('blur', checkPassword);
 
-      // Validate on blur
-      emailInput.addEventListener('blur', function() {
-        if (this.value.length > 0) {
-          checkEmail();
-        }
-      });
-
-      // Real-time validation on password input
-      passwordInput.addEventListener('input', function() {
-        if (this.value.length > 0) {
-          checkPassword();
-        } else {
-          clearValidation(passwordInput, passwordError);
-          passwordHelp.style.display = 'block';
-        }
-      });
-
-      // Validate on blur
-      passwordInput.addEventListener('blur', function() {
-        if (this.value.length > 0) {
-          checkPassword();
-        }
-      });
-
-      // Form submission validation
       loginForm.addEventListener('submit', function(e) {
         const isEmailValid = checkEmail();
         const isPasswordValid = checkPassword();
