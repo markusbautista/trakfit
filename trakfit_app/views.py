@@ -416,9 +416,6 @@ def student_post_test_view(request):
     return render(request, 'student/post_test.html', context)
 
 @login_required
-def student_settings_view(request):
-    return render(request, 'student/settings.html')
-
 def teacher_dashboard(request):
     return render(request, 'teacher-dashboard.html')
 

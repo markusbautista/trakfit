@@ -33,7 +33,6 @@ urlpatterns = [
     path('student-profile-update/', views.student_profile_update_view, name='student-profile-update'),
     path('student-pre-test/', views.student_pre_test_view, name='student-pre-test'),
     path('student-post-test/', views.student_post_test_view, name='student-post-test'),
-    path('student-settings/', views.student_settings_view, name='student-settings'),
     path('teacher-dashboard/', views.teacher_dashboard, name='teacher_dashboard'),
     path('student-management/', views.student_management, name='student_management'),
     path('student-profile/<int:student_id>/', views.student_profile, name='student_profile'),
