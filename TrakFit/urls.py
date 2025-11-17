@@ -35,7 +35,7 @@ urlpatterns = [
     path('student-post-test/', views.student_post_test_view, name='student-post-test'),
     path('teacher-dashboard/', views.teacher_dashboard, name='teacher_dashboard'),
     path('student-management/', views.student_management, name='student_management'),
-    path('student-profile/<int:student_id>/', views.student_profile, name='student_profile'),
+    path('student-profile/<str:student_no>/', views.student_profile, name='student_profile'),
     path('change-password/', views.change_password, name='change_password'),
     path('student-history', views.student_history, name='student-history'),
 ]

@@ -36,7 +36,7 @@ class StudentAdmin(admin.ModelAdmin):
     fieldsets = (
         ('User Account', {'fields': ('user',)}),
         ('Personal Information', {'fields': ('student_no', 'first_name', 'middle_initial', 'last_name', 'age')}),
-        ('Academic Information', {'fields': ('section_code', 'group_code')}),
+        ('Academic Information', {'fields': ('section_code', 'group_code'), 'description': 'Group code is required for all students'}),
         ('Timestamps', {'fields': ('last_data_update_at', 'created_at', 'updated_at')}),
     )
     

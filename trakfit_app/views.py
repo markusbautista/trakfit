@@ -64,7 +64,7 @@ def register(request):
         # Validation
         errors = []
         
-        if not all([student_no, first_name, last_name, birthday, section_code, email, gender, password]):
+        if not all([student_no, first_name, last_name, birthday, section_code, group_code, email, gender, password]):
             errors.append('All fields are required.')
         
         if password != confirm_password:
@@ -118,7 +118,7 @@ def register(request):
                 age=age,
                 gender=gender,
                 section_code=section_code,
-                group_code=group_code if group_code else None,
+                group_code=group_code,
             )
             
             # Auto-login the user
@@ -287,8 +287,45 @@ def student_profile_view(request):
     pre_test_count = student.fitness_tests.filter(test_type='pre').count()
     post_test_count = student.fitness_tests.filter(test_type='post').count()
     
-    # Get pre-test for button lock check
+    # Get pre-test for button lock check and comparison
     pre_test = student.fitness_tests.filter(test_type='pre').order_by('-taken_at').first()
+    
+    # Prepare comparison data for latest test
+    pre_test_data = None
+    previous_test_data = None
+    
+    if latest_test:
+        # Build pre-test data
+        if pre_test:
+            pre_test_data = {
+                'bmi': round(pre_test.bmi, 1) if pre_test.bmi else None,
+                'vo2_max': round(pre_test.vo2_max, 1) if pre_test.vo2_max else None,
+                'flexibility_cm': float(pre_test.flexibility_cm) if pre_test.flexibility_cm else None,
+                'strength_reps': pre_test.strength_reps,
+                'agility_sec': float(pre_test.agility_sec) if pre_test.agility_sec else None,
+                'speed_sec': float(pre_test.speed_sec) if pre_test.speed_sec else None,
+                'endurance_display': pre_test.get_endurance_display(),
+            }
+        
+        # Get all tests ordered by date to find previous test
+        all_tests_ordered = list(student.fitness_tests.all().order_by('-taken_at'))
+        
+        # Find previous test (the one before latest_test)
+        try:
+            current_test_index = next(i for i, t in enumerate(all_tests_ordered) if t.test_id == latest_test.test_id)
+            if current_test_index + 1 < len(all_tests_ordered):
+                previous_test = all_tests_ordered[current_test_index + 1]
+                previous_test_data = {
+                    'bmi': round(previous_test.bmi, 1) if previous_test.bmi else None,
+                    'vo2_max': round(previous_test.vo2_max, 1) if previous_test.vo2_max else None,
+                    'flexibility_cm': float(previous_test.flexibility_cm) if previous_test.flexibility_cm else None,
+                    'strength_reps': previous_test.strength_reps,
+                    'agility_sec': float(previous_test.agility_sec) if previous_test.agility_sec else None,
+                    'speed_sec': float(previous_test.speed_sec) if previous_test.speed_sec else None,
+                    'endurance_display': previous_test.get_endurance_display(),
+                }
+        except StopIteration:
+            pass
     
     context = {
         'student': student,
@@ -297,6 +334,8 @@ def student_profile_view(request):
         'pre_test_count': pre_test_count,
         'post_test_count': post_test_count,
         'pre_test': pre_test,
+        'pre_test_data': pre_test_data,
+        'previous_test_data': previous_test_data,
     }
     return render(request, 'student/profile.html', context)
 
@@ -420,10 +459,27 @@ def teacher_dashboard(request):
     return render(request, 'teacher-dashboard.html')
 
 def student_management(request):
-    return render(request, 'student-management.html')
+    data = {
+        'students': Student.objects.all(),
+    }
+    return render(request, 'student-management.html', data)
 
-def student_profile(request, student_id):
-    return render(request, 'student-profile.html')
+def student_profile(request, student_no):
+    from .models import FitnessTest
+    
+    student = Student.objects.get(student_no=student_no)
+    
+    # Get pre-test and post-test
+    pre_test = student.fitness_tests.filter(test_type='pre').first()
+    post_test = student.fitness_tests.filter(test_type='post').first()
+    
+    template = "student-profile.html"
+    data = {
+        'student': student,
+        'pre_test': pre_test,
+        'post_test': post_test,
+    }
+    return render(request, template, data)
 
 def change_password(request):
     return render(request, 'change-password.html')
@@ -444,10 +500,11 @@ def get_bmi_status(bmi):
 @login_required
 def student_history(request):
     from datetime import datetime
+    import json
     
     student = request.user.student_profile
     
-    # Get all fitness tests for the student
+    # Get all fitness tests for the student, sorted by latest first
     tests = student.fitness_tests.all().order_by('-taken_at')
     
     # Apply filters
@@ -474,18 +531,89 @@ def student_history(request):
         except ValueError:
             pass
     
-    # Add BMI status to each test
-    tests_with_status = []
-    for test in tests:
-        test.bmi_status = get_bmi_status(test.bmi)
-        tests_with_status.append(test)
-    
-    # Get pre-test for button lock check
+    # Get pre-test (only one per student ever)
     pre_test = student.fitness_tests.filter(test_type='pre').order_by('-taken_at').first()
+    
+    # Get all tests ordered by date for finding previous test
+    all_tests_ordered = list(student.fitness_tests.all().order_by('-taken_at'))
+    
+    # Prepare test data with BMI, VO2 Max, remarks, pre-test, and previous test for JSON
+    tests_data = []
+    for idx, test in enumerate(tests):
+        # Get remarks for this test
+        remarks = test.remarks.all().order_by('-created_at')
+        remarks_list = [
+            {
+                'body': remark.body,
+                'created_at': remark.created_at.strftime('%B %d, %Y') if remark.created_at else 'N/A'
+            }
+            for remark in remarks
+        ]
+        
+        # Build pre-test data
+        pre_test_data = None
+        if pre_test:
+            pre_test_data = {
+                'test_id': pre_test.test_id,
+                'bmi': round(pre_test.bmi, 1) if pre_test.bmi else None,
+                'vo2_max': round(pre_test.vo2_max, 1) if pre_test.vo2_max else None,
+                'height_cm': float(pre_test.height_cm) if pre_test.height_cm else None,
+                'weight_kg': float(pre_test.weight_kg) if pre_test.weight_kg else None,
+                'flexibility_cm': float(pre_test.flexibility_cm) if pre_test.flexibility_cm else None,
+                'strength_reps': pre_test.strength_reps,
+                'agility_sec': float(pre_test.agility_sec) if pre_test.agility_sec else None,
+                'speed_sec': float(pre_test.speed_sec) if pre_test.speed_sec else None,
+                'endurance_display': pre_test.get_endurance_display(),
+            }
+        
+        # Find previous test (the one taken before the current test)
+        previous_test_data = None
+        try:
+            # Find the current test in the all_tests_ordered list
+            current_test_index = next(i for i, t in enumerate(all_tests_ordered) if t.test_id == test.test_id)
+            # Previous test is the next one in the list (since list is sorted by -taken_at)
+            if current_test_index + 1 < len(all_tests_ordered):
+                previous_test = all_tests_ordered[current_test_index + 1]
+                previous_test_data = {
+                    'test_id': previous_test.test_id,
+                    'bmi': round(previous_test.bmi, 1) if previous_test.bmi else None,
+                    'vo2_max': round(previous_test.vo2_max, 1) if previous_test.vo2_max else None,
+                    'height_cm': float(previous_test.height_cm) if previous_test.height_cm else None,
+                    'weight_kg': float(previous_test.weight_kg) if previous_test.weight_kg else None,
+                    'flexibility_cm': float(previous_test.flexibility_cm) if previous_test.flexibility_cm else None,
+                    'strength_reps': previous_test.strength_reps,
+                    'agility_sec': float(previous_test.agility_sec) if previous_test.agility_sec else None,
+                    'speed_sec': float(previous_test.speed_sec) if previous_test.speed_sec else None,
+                    'endurance_display': previous_test.get_endurance_display(),
+                }
+        except StopIteration:
+            pass
+        
+        test_dict = {
+            'test_id': test.test_id,
+            'test_type': test.get_test_type_display(),
+            'test_type_key': test.test_type,
+            'taken_at': test.taken_at.strftime('%B %d, %Y') if test.taken_at else 'N/A',
+            'updated_at': test.updated_at.strftime('%B %d, %Y') if test.updated_at else 'N/A',
+            'bmi': round(test.bmi, 1) if test.bmi else None,
+            'vo2_max': round(test.vo2_max, 1) if test.vo2_max else None,
+            'height_cm': float(test.height_cm) if test.height_cm else None,
+            'weight_kg': float(test.weight_kg) if test.weight_kg else None,
+            'flexibility_cm': float(test.flexibility_cm) if test.flexibility_cm else None,
+            'strength_reps': test.strength_reps,
+            'agility_sec': float(test.agility_sec) if test.agility_sec else None,
+            'speed_sec': float(test.speed_sec) if test.speed_sec else None,
+            'endurance_display': test.get_endurance_display(),
+            'remarks': remarks_list,
+            'pre_test': pre_test_data,
+            'previous_test': previous_test_data,
+        }
+        tests_data.append(test_dict)
     
     context = {
         'student': student,
-        'tests': tests_with_status,
+        'tests': tests,
+        'tests_json': json.dumps(tests_data),
         'test_type_filter': test_type,
         'start_date_filter': start_date,
         'end_date_filter': end_date,
@@ -493,3 +621,6 @@ def student_history(request):
         'pre_test': pre_test,
     }
     return render(request, 'student/history.html', context)
+
+
+# ADMIN SIDE!

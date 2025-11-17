@@ -72,7 +72,7 @@ class Student(models.Model):
     age = models.IntegerField()
     gender = models.CharField(max_length=10, blank=True, null=True)
     section_code = models.CharField(max_length=20)
-    group_code = models.CharField(max_length=20, blank=True, null=True)
+    group_code = models.CharField(max_length=20, help_text="Student's assigned group code (e.g., G1, G2, G3)")
     last_data_update_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

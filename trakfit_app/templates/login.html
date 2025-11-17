@@ -10,6 +10,11 @@
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
       rel="stylesheet"
     />
+    <!-- Bootstrap Icons -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
     <!-- Fonts -->
     <link
       href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&family=Rajdhani:wght@700&display=swap"
@@ -153,6 +158,71 @@
         color: var(--primary-color);
         font-weight: 600;
         text-decoration: none;
+      }
+
+      .password-wrapper {
+        position: relative;
+        display: inline-block;
+        width: 100%;
+      }
+
+      .password-toggle {
+        position: absolute;
+        right: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        color: rgba(44, 62, 80, 0.6);
+        font-size: 1.2rem;
+        z-index: 10;
+        user-select: none;
+        line-height: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        pointer-events: auto;
+      }
+
+      .password-toggle:hover {
+        color: rgba(44, 62, 80, 0.9);
+      }
+
+      .form-control-custom.is-invalid:focus {
+        border: 2px solid #dc3545;
+      }
+
+      .form-control-custom.is-valid:focus {
+        border: 2px solid #198754;
+      }
+
+      /* Remove Bootstrap's default validation icons */
+      .form-control-custom.is-valid,
+      .form-control-custom.is-invalid {
+        background-image: none !important;
+      }
+      
+      /* Ensure password field has proper padding for eye icon */
+      .password-wrapper .form-control-custom {
+        padding-right: 50px;
+      }
+
+      .error-message {
+        color: #dc3545;
+        font-size: clamp(0.75rem, 1.5vw, 0.875rem);
+        margin-top: 0.25rem;
+        margin-left: 20px;
+        display: none;
+      }
+
+      .error-message.show {
+        display: block;
+      }
+
+      .help-text {
+        color: rgba(44, 62, 80, 0.6);
+        font-size: clamp(0.75rem, 1.5vw, 0.875rem);
+        margin-top: 0.25rem;
+        margin-left: 20px;
       }
 
       .brand-logo {
@@ -405,7 +475,7 @@
           </p>
 
           <!-- Login Form -->
-          <form method="POST" action="{% url 'login' %}">
+          <form method="POST" action="{% url 'login' %}" id="loginForm" novalidate>
             {% csrf_token %}
             <div class="mb-3">
               <input
@@ -416,16 +486,23 @@
                 placeholder="Email"
                 required
               />
+              <div class="error-message" id="emailError"></div>
             </div>
-            <div class="mb-3 position-relative">
-              <input
-                type="password"
-                name="password"
-                id="passwordInput"
-                class="form-control form-control-custom"
-                placeholder="Password"
-                required
-              />
+            <div class="mb-3">
+              <div class="password-wrapper">
+                <input
+                  type="password"
+                  name="password"
+                  id="passwordInput"
+                  class="form-control form-control-custom"
+                  placeholder="Password"
+                  minlength="8"
+                  required
+                />
+                <i class="bi bi-eye-slash password-toggle" id="togglePassword"></i>
+              </div>
+              <div class="error-message" id="passwordError"></div>
+              <div class="help-text" id="passwordHelp">Must be at least 8 characters</div>
             </div>
             <div class="mb-3">
               <button
@@ -496,6 +573,134 @@
 
         if (messageOverlay && event.target === messageOverlay) {
           closeMessage();
+        }
+      });
+
+      // Toggle password visibility
+      const togglePassword = document.getElementById('togglePassword');
+      const passwordInput = document.getElementById('passwordInput');
+
+      if (togglePassword && passwordInput) {
+        togglePassword.addEventListener('click', function() {
+          // Toggle the type attribute
+          const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+          passwordInput.setAttribute('type', type);
+          
+          // Toggle the icon
+          this.classList.toggle('bi-eye');
+          this.classList.toggle('bi-eye-slash');
+        });
+      }
+
+      // Form validation
+      const loginForm = document.getElementById('loginForm');
+      const emailInput = document.getElementById('emailInput');
+      const emailError = document.getElementById('emailError');
+      const passwordError = document.getElementById('passwordError');
+      const passwordHelp = document.getElementById('passwordHelp');
+
+      // Email validation function
+      function validateEmail(email) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+      }
+
+      // Show error message
+      function showError(input, errorElement, message) {
+        input.classList.add('is-invalid');
+        input.classList.remove('is-valid');
+        errorElement.textContent = message;
+        errorElement.classList.add('show');
+      }
+
+      // Show success state (no visual indicator except on focus)
+      function showSuccess(input, errorElement) {
+        input.classList.remove('is-invalid');
+        input.classList.add('is-valid');
+        errorElement.classList.remove('show');
+      }
+
+      // Clear validation state
+      function clearValidation(input, errorElement) {
+        input.classList.remove('is-invalid', 'is-valid');
+        errorElement.classList.remove('show');
+      }
+
+      // Validate email field
+      function checkEmail() {
+        const email = emailInput.value.trim();
+        
+        if (email === '') {
+          showError(emailInput, emailError, 'Email is required');
+          return false;
+        } else if (!validateEmail(email)) {
+          showError(emailInput, emailError, 'Please enter a valid email address');
+          return false;
+        } else {
+          showSuccess(emailInput, emailError);
+          return true;
+        }
+      }
+
+      // Validate password field
+      function checkPassword() {
+        const password = passwordInput.value;
+        
+        if (password === '') {
+          showError(passwordInput, passwordError, 'Password is required');
+          passwordHelp.style.display = 'none';
+          return false;
+        } else if (password.length < 8) {
+          showError(passwordInput, passwordError, 'Password must be at least 8 characters');
+          passwordHelp.style.display = 'none';
+          return false;
+        } else {
+          showSuccess(passwordInput, passwordError);
+          passwordHelp.style.display = 'block';
+          return true;
+        }
+      }
+
+      // Real-time validation on input
+      emailInput.addEventListener('input', function() {
+        if (this.value.length > 0) {
+          checkEmail();
+        } else {
+          clearValidation(emailInput, emailError);
+        }
+      });
+
+      // Validate on blur
+      emailInput.addEventListener('blur', function() {
+        if (this.value.length > 0) {
+          checkEmail();
+        }
+      });
+
+      // Real-time validation on password input
+      passwordInput.addEventListener('input', function() {
+        if (this.value.length > 0) {
+          checkPassword();
+        } else {
+          clearValidation(passwordInput, passwordError);
+          passwordHelp.style.display = 'block';
+        }
+      });
+
+      // Validate on blur
+      passwordInput.addEventListener('blur', function() {
+        if (this.value.length > 0) {
+          checkPassword();
+        }
+      });
+
+      // Form submission validation
+      loginForm.addEventListener('submit', function(e) {
+        const isEmailValid = checkEmail();
+        const isPasswordValid = checkPassword();
+        
+        if (!isEmailValid || !isPasswordValid) {
+          e.preventDefault();
         }
       });
     </script>

@@ -37,6 +37,84 @@
         overflow-x: hidden;
       }
 
+      .alert-banner {
+        background: linear-gradient(135deg, #ffeaa7, #fdcb6e);
+        border-radius: 12px;
+        padding: 1rem 1.5rem;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        box-shadow: 0 2px 8px rgba(253, 203, 110, 0.3);
+      }
+
+      .alert-banner .alert-content {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        flex: 1;
+      }
+
+      .alert-banner .alert-icon {
+        font-size: 1.5rem;
+        color: #e17055;
+      }
+
+      .alert-banner .alert-text {
+        flex: 1;
+      }
+
+      .alert-banner .alert-text h5 {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 600;
+        color: #2c3e50;
+      }
+
+      .alert-banner .alert-text p {
+        margin: 0;
+        font-size: 0.875rem;
+        color: #2c3e50;
+      }
+
+      .alert-banner .btn-alert {
+        background: #2c3e50;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 0.5rem 1.25rem;
+        font-weight: 600;
+        font-size: 0.875rem;
+        text-decoration: none;
+        white-space: nowrap;
+        transition: background 0.2s ease;
+      }
+
+      .alert-banner .btn-alert:hover {
+        background: #1a252f;
+      }
+
+      .alert-banner .btn-close-banner {
+        background: none;
+        border: none;
+        color: #2c3e50;
+        font-size: 1.25rem;
+        cursor: pointer;
+        padding: 0;
+        margin-left: 1rem;
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0.6;
+        transition: opacity 0.2s ease;
+      }
+
+      .alert-banner .btn-close-banner:hover {
+        opacity: 1;
+      }
+
       .main-content {
         margin-left: 250px;
         padding: 1.5rem;
@@ -276,6 +354,190 @@
         font-weight: 400;
       }
 
+      /* Message overlay styles */
+      .message-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        padding: 1rem;
+      }
+
+      .message-modal {
+        background: white;
+        border-radius: 20px;
+        padding: 2rem;
+        max-width: 400px;
+        width: 100%;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        text-align: center;
+        position: relative;
+      }
+
+      .message-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+      }
+
+      .message-success {
+        color: #198754;
+      }
+
+      .message-error {
+        color: #dc3545;
+      }
+
+      .message-warning {
+        color: #ffc107;
+      }
+
+      .message-info {
+        color: #0dcaf0;
+      }
+
+      .message-content {
+        font-size: 1.1rem;
+        margin-bottom: 1.5rem;
+        color: #2c3e50;
+      }
+
+      .message-close-btn {
+        background-color: #3a7ca5;
+        color: white;
+        border: none;
+        border-radius: 40px;
+        padding: 0.75rem 2rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+
+      .message-close-btn:hover {
+        background-color: #2c5f7a;
+      }
+
+      /* Table styles for comparison */
+      .test-details-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+        flex-shrink: 0;
+        gap: 1rem;
+      }
+
+      .test-details-title {
+        font-size: clamp(1.1rem, 1.3vw, 1.3rem);
+        font-weight: 700;
+        color: var(--dark-text);
+        margin: 0;
+      }
+
+      .test-details-meta {
+        text-align: right;
+        font-size: clamp(0.8rem, 0.9vw, 0.9rem);
+        color: var(--dark-text);
+        line-height: 1.5;
+      }
+
+      .test-details-meta div {
+        margin-bottom: 0.25rem;
+      }
+
+      .test-details-meta div:last-child {
+        margin-bottom: 0;
+      }
+
+      .test-details-meta .updated-at {
+        font-size: clamp(0.7rem, 0.8vw, 0.8rem);
+        color: #6b7280;
+      }
+
+      .test-results-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        margin-bottom: 0;
+        border: 1px solid #E5E7EB;
+        border-radius: 12px;
+        overflow: hidden;
+      }
+
+      .test-results-table th {
+        background: #F5F4F5;
+        padding: 0.65rem 1rem;
+        text-align: center;
+        font-weight: 600;
+        color: var(--dark-text);
+        font-size: clamp(0.75rem, 0.85vw, 0.85rem);
+        border-bottom: 1px solid #E5E7EB;
+      }
+
+      .test-results-table th:first-child {
+        border-top-left-radius: 12px;
+        text-align: left;
+      }
+
+      .test-results-table th:last-child {
+        border-top-right-radius: 12px;
+      }
+
+      .test-results-table tbody tr:last-child td:first-child {
+        border-bottom-left-radius: 12px;
+      }
+
+      .test-results-table tbody tr:last-child td:last-child {
+        border-bottom-right-radius: 12px;
+      }
+
+      .test-results-table td {
+        padding: 0.65rem 1rem;
+        border-bottom: 1px solid #E5E7EB;
+        font-size: clamp(0.75rem, 0.85vw, 0.85rem);
+        color: var(--dark-text);
+        background: white;
+        text-align: left;
+      }
+
+      .test-results-table tbody tr:last-child td {
+        border-bottom: none;
+      }
+
+      .component-name {
+        font-weight: 500;
+        color: var(--dark-text);
+        text-align: left;
+        padding-left: 1.5rem;
+      }
+
+      .current-test-col {
+        font-weight: 600;
+      }
+
+      .difference {
+        font-size: 0.85em;
+        font-weight: 600;
+        margin-left: 0.25rem;
+      }
+
+      .difference-positive {
+        color: #16a34a;
+      }
+
+      .difference-negative {
+        color: #dc2626;
+      }
+
+      .difference-neutral {
+        color: #6b7280;
+      }
+
       @media (max-width: 1400px) {
         .main-content {
           margin-left: 250px;
@@ -305,6 +567,28 @@
     </style>
   </head>
   <body>
+    <!-- Message Overlay -->
+    {% if messages %}
+    <div class="message-overlay">
+      <div class="message-modal">
+        {% for message in messages %}
+          <div class="message-icon
+            {% if message.tags == 'success' %}message-success
+            {% elif message.tags == 'error' %}message-error
+            {% elif message.tags == 'warning' %}message-warning
+            {% else %}message-info{% endif %}">
+            {% if message.tags == 'success' %}✓
+            {% elif message.tags == 'error' %}✕
+            {% elif message.tags == 'warning' %}⚠
+            {% else %}ℹ{% endif %}
+          </div>
+          <div class="message-content">{{ message }}</div>
+        {% endfor %}
+        <button class="message-close-btn" onclick="closeMessage()">Continue</button>
+      </div>
+    </div>
+    {% endif %}
+
     <!-- Sidebar -->
     {% include 'student/sidebar.html' %}
 
@@ -352,6 +636,27 @@
           </div>
         </div>
       </div>
+
+      <!-- Pre-Test Alert Banner -->
+      {% if not pre_test %}
+      <div class="alert-banner" id="preTestAlert">
+        <div class="alert-content">
+          <div class="alert-icon">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+          </div>
+          <div class="alert-text">
+            <h5>No Pre-Test Data Found</h5>
+            <p>Complete your pre-test to start tracking your fitness progress.</p>
+          </div>
+          <a href="{% url 'student-pre-test' %}" class="btn-alert">
+            <i class="fa-solid fa-plus me-2"></i>Take Pre-Test
+          </a>
+        </div>
+        <button class="btn-close-banner" onclick="dismissAlert()" aria-label="Close">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      {% endif %}
 
       <!-- Personal & Academic Information -->
       <div class="row">
@@ -405,12 +710,10 @@
                 <span class="detail-label">Section Code:</span>
                 <span class="detail-value">{{ student.section_code }}</span>
               </div>
-              {% if student.group_code %}
               <div class="detail-item">
                 <span class="detail-label">Group Code:</span>
                 <span class="detail-value">{{ student.group_code }}</span>
               </div>
-              {% endif %}
             </div>
           </div>
         </div>
@@ -455,92 +758,23 @@
         <div class="col-12">
           {% if latest_test %}
             <div class="test-card p-4 mb-3" id="latest-test-card">
-              <div class="d-flex align-items-center mb-3">
-                <i class="fa-solid fa-clipboard-list me-2" style="color: #3a7ca5; font-size: 1.5rem;"></i>
-                <h5 class="mb-0" style="color: #2c3e50; font-weight: 600; font-size: 1.25rem;">
-                  Latest Test
-                </h5>
-              </div>
-              <div class="details-grid" style="padding: 0;">
-                  <div class="detail-section">
-                    <h6>Test Information</h6>
-                    <div class="detail-item">
-                      <span class="detail-label">Type:</span>
-                      <span class="detail-value">{{ latest_test.get_test_type_display }}</span>
-                    </div>
-                    <div class="detail-item">
-                      <span class="detail-label">Date:</span>
-                      <span class="detail-value">{{ latest_test.taken_at|date:"F d, Y" }}</span>
-                    </div>
-                    <div class="detail-item">
-                      <span class="detail-label">Time:</span>
-                      <span class="detail-value">{{ latest_test.taken_at|date:"g:i A" }}</span>
-                    </div>
-                  </div>
-                  <div class="detail-section">
-                    <h6>Body Metrics</h6>
-                    <div class="detail-item">
-                      <span class="detail-label">Height:</span>
-                      <span class="detail-value">{{ latest_test.height_cm|default:"N/A" }} {% if latest_test.height_cm %}cm{% endif %}</span>
-                    </div>
-                    <div class="detail-item">
-                      <span class="detail-label">Weight:</span>
-                      <span class="detail-value">{{ latest_test.weight_kg|default:"N/A" }} {% if latest_test.weight_kg %}kg{% endif %}</span>
-                    </div>
-                    <div class="detail-item">
-                      <span class="detail-label">BMI:</span>
-                      <span class="detail-value">
-                        {% if latest_test.bmi %}
-                          {{ latest_test.bmi|floatformat:1 }} ({{ latest_test.bmi_status }})
-                        {% else %}
-                          N/A
-                        {% endif %}
-                      </span>
-                    </div>
-                  </div>
-                  <div class="detail-section">
-                    <h6>Fitness Results</h6>
-                    <div class="detail-item">
-                      <span class="detail-label">Flexibility:</span>
-                      <span class="detail-value">{{ latest_test.flexibility_cm|default:"N/A" }} {% if latest_test.flexibility_cm %}cm{% endif %}</span>
-                    </div>
-                    <div class="detail-item">
-                      <span class="detail-label">Strength:</span>
-                      <span class="detail-value">{{ latest_test.strength_reps|default:"N/A" }} {% if latest_test.strength_reps %}reps{% endif %}</span>
-                    </div>
-                    <div class="detail-item">
-                      <span class="detail-label">Agility:</span>
-                      <span class="detail-value">{{ latest_test.agility_sec|default:"N/A" }} {% if latest_test.agility_sec %}sec{% endif %}</span>
-                    </div>
-                  </div>
-                  <div class="detail-section">
-                    <h6>Performance Metrics</h6>
-                    <div class="detail-item">
-                      <span class="detail-label">Speed (40m):</span>
-                      <span class="detail-value">{{ latest_test.speed_sec|default:"N/A" }} {% if latest_test.speed_sec %}sec{% endif %}</span>
-                    </div>
-                    <div class="detail-item">
-                      <span class="detail-label">Endurance (1.5km):</span>
-                      <span class="detail-value">{{ latest_test.get_endurance_display|default:"N/A" }}</span>
-                    </div>
-                    <div class="detail-item">
-                      <span class="detail-label">VO₂ Max:</span>
-                      <span class="detail-value">
-                        {% if latest_test.vo2_max %}
-                          {{ latest_test.vo2_max|floatformat:1 }} ml/kg/min
-                        {% else %}
-                          N/A
-                        {% endif %}
-                      </span>
-                    </div>
-                  </div>
+              <div class="test-details-header">
+                <div>
+                  <i class="fa-solid fa-clipboard-list me-2" style="color: #3a7ca5; font-size: 1.5rem;"></i>
+                  <span class="test-details-title">Latest Test</span>
+                </div>
+                <div class="test-details-meta">
+                  <div><strong>Taken at:</strong> {{ latest_test.taken_at|date:"F d, Y" }}</div>
+                  <div class="updated-at"><strong>Updated at:</strong> {{ latest_test.updated_at|date:"F d, Y"|default:"N/A" }}</div>
                 </div>
               </div>
+              <div id="test-table-container"></div>
             </div>
           {% else %}
-            <div class="alert alert-info text-center" role="alert" style="border-radius: 15px;">
-              <h5 class="mb-0">No fitness tests found</h5>
-              <p class="mb-0 mt-2">Start by creating your first test using the button above.</p>
+            <div class="test-card p-4 mb-3 text-center">
+              <i class="fa-solid fa-clipboard-question mb-3" style="color: #3a7ca5; font-size: 3rem; opacity: 0.5;"></i>
+              <h5 class="mb-2" style="color: #2c3e50; font-weight: 600;">No fitness tests found</h5>
+              <p class="mb-0" style="color: #6c757d;">Start by creating your first test using the button above.</p>
             </div>
           {% endif %}
         </div>
@@ -551,6 +785,173 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
+      // Message overlay functions
+      function closeMessage() {
+        const messageOverlay = document.querySelector('.message-overlay');
+        if (messageOverlay) {
+          messageOverlay.style.display = 'none';
+        }
+      }
+
+      // Auto-close message after 5 seconds
+      document.addEventListener('DOMContentLoaded', function() {
+        const messageOverlay = document.querySelector('.message-overlay');
+        if (messageOverlay) {
+          setTimeout(closeMessage, 5000);
+        }
+      });
+
+      // Close message when clicking outside the modal
+      document.addEventListener('click', function(event) {
+        const messageOverlay = document.querySelector('.message-overlay');
+        const messageModal = document.querySelector('.message-modal');
+
+        if (messageOverlay && event.target === messageOverlay) {
+          closeMessage();
+        }
+      });
+
+      // Render test comparison table
+      {% if latest_test %}
+      document.addEventListener('DOMContentLoaded', function() {
+        const latestTest = {
+          test_type_key: '{{ latest_test.test_type }}',
+          bmi: {{ latest_test.bmi|default:'null' }},
+          vo2_max: {{ latest_test.vo2_max|default:'null' }},
+          flexibility_cm: {{ latest_test.flexibility_cm|default:'null' }},
+          strength_reps: {{ latest_test.strength_reps|default:'null' }},
+          agility_sec: {{ latest_test.agility_sec|default:'null' }},
+          speed_sec: {{ latest_test.speed_sec|default:'null' }},
+          endurance_display: '{{ latest_test.get_endurance_display|default:"N/A" }}'
+        };
+
+        const preTest = {% if pre_test_data %}{{ pre_test_data|safe }}{% else %}null{% endif %};
+        const previousTest = {% if previous_test_data %}{{ previous_test_data|safe }}{% else %}null{% endif %};
+
+        // Helper function to format value or show N/A
+        const formatValue = (value, unit = '') => {
+          if (value === null || value === undefined) return 'N/A';
+          const formattedValue = typeof value === 'number' ? value.toFixed(2) : value;
+          return `${formattedValue}${unit ? ' ' + unit : ''}`;
+        };
+
+        // Helper function to calculate difference
+        const calculateDifference = (current, comparison, lowerIsBetter = false) => {
+          if (current === null || current === undefined || comparison === null || comparison === undefined) {
+            return null;
+          }
+          const diff = current - comparison;
+          if (diff === 0) return { value: 0, isPositive: null };
+          
+          const isImprovement = lowerIsBetter ? diff < 0 : diff > 0;
+          return { value: Math.abs(diff).toFixed(1), isPositive: isImprovement };
+        };
+
+        // Helper function to format with difference
+        const formatWithDifference = (current, comparison, unit = '', lowerIsBetter = false) => {
+          const valueStr = formatValue(current, unit);
+          const diff = calculateDifference(current, comparison, lowerIsBetter);
+          
+          if (!diff) return valueStr;
+          
+          const sign = diff.isPositive ? '+' : '-';
+          const colorClass = diff.isPositive ? 'difference-positive' : 'difference-negative';
+          
+          return `${valueStr} <span class="difference ${colorClass}">(${sign}${diff.value})</span>`;
+        };
+
+        // Helper function to convert endurance time to seconds
+        const convertEnduranceToSeconds = (timeStr) => {
+          if (!timeStr || timeStr === 'N/A') return null;
+          const parts = timeStr.split(':');
+          if (parts.length !== 2) return null;
+          const minutes = parseInt(parts[0], 10);
+          const seconds = parseInt(parts[1], 10);
+          if (isNaN(minutes) || isNaN(seconds)) return null;
+          return minutes * 60 + seconds;
+        };
+
+        // Helper function to format endurance with difference
+        const formatEnduranceWithDifference = (currentTime, comparisonTime) => {
+          if (!currentTime || currentTime === 'N/A') return 'N/A';
+          
+          const currentSeconds = convertEnduranceToSeconds(currentTime);
+          const comparisonSeconds = convertEnduranceToSeconds(comparisonTime);
+          
+          if (!comparisonSeconds) return currentTime;
+          
+          const diff = calculateDifference(currentSeconds, comparisonSeconds, true);
+          if (!diff) return currentTime;
+          
+          const sign = diff.isPositive ? '+' : '-';
+          const colorClass = diff.isPositive ? 'difference-positive' : 'difference-negative';
+          
+          return `${currentTime} <span class="difference ${colorClass}">(${sign}${diff.value}s)</span>`;
+        };
+
+        const isPreTest = latestTest.test_type_key === 'pre';
+
+        const tableHTML = `
+          <table class="test-results-table">
+            <thead>
+              <tr>
+                <th>Fitness Component</th>
+                <th class="current-test-col">Current Value</th>
+                <th>Previous Test</th>
+                <th>Pre-Test</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="component-name">Body Mass Index (BMI)</td>
+                <td class="current-test-col">${formatValue(latestTest.bmi)}</td>
+                <td>${isPreTest ? 'N/A' : formatWithDifference(latestTest.bmi, previousTest?.bmi, '', true)}</td>
+                <td>${formatWithDifference(latestTest.bmi, preTest?.bmi, '', true)}</td>
+              </tr>
+              <tr>
+                <td class="component-name">VO<sub>2</sub> Max</td>
+                <td class="current-test-col">${formatValue(latestTest.vo2_max, 'mL/kg/min')}</td>
+                <td>${isPreTest ? 'N/A' : formatWithDifference(latestTest.vo2_max, previousTest?.vo2_max, 'mL/kg/min', false)}</td>
+                <td>${formatWithDifference(latestTest.vo2_max, preTest?.vo2_max, 'mL/kg/min', false)}</td>
+              </tr>
+              <tr>
+                <td class="component-name">Flexibility (Sit & Reach)</td>
+                <td class="current-test-col">${formatValue(latestTest.flexibility_cm, 'cm')}</td>
+                <td>${isPreTest ? 'N/A' : formatWithDifference(latestTest.flexibility_cm, previousTest?.flexibility_cm, 'cm', false)}</td>
+                <td>${formatWithDifference(latestTest.flexibility_cm, preTest?.flexibility_cm, 'cm', false)}</td>
+              </tr>
+              <tr>
+                <td class="component-name">Strength (Push-ups)</td>
+                <td class="current-test-col">${formatValue(latestTest.strength_reps, 'reps')}</td>
+                <td>${isPreTest ? 'N/A' : formatWithDifference(latestTest.strength_reps, previousTest?.strength_reps, 'reps', false)}</td>
+                <td>${formatWithDifference(latestTest.strength_reps, preTest?.strength_reps, 'reps', false)}</td>
+              </tr>
+              <tr>
+                <td class="component-name">Agility (Hexagon)</td>
+                <td class="current-test-col">${formatValue(latestTest.agility_sec, 'sec')}</td>
+                <td>${isPreTest ? 'N/A' : formatWithDifference(latestTest.agility_sec, previousTest?.agility_sec, 'sec', true)}</td>
+                <td>${formatWithDifference(latestTest.agility_sec, preTest?.agility_sec, 'sec', true)}</td>
+              </tr>
+              <tr>
+                <td class="component-name">Speed (40m Sprint)</td>
+                <td class="current-test-col">${formatValue(latestTest.speed_sec, 'sec')}</td>
+                <td>${isPreTest ? 'N/A' : formatWithDifference(latestTest.speed_sec, previousTest?.speed_sec, 'sec', true)}</td>
+                <td>${formatWithDifference(latestTest.speed_sec, preTest?.speed_sec, 'sec', true)}</td>
+              </tr>
+              <tr>
+                <td class="component-name">Endurance (3-min Step Test)</td>
+                <td class="current-test-col">${latestTest.endurance_display || 'N/A'}</td>
+                <td>${isPreTest ? 'N/A' : formatEnduranceWithDifference(latestTest.endurance_display, previousTest?.endurance_display)}</td>
+                <td>${formatEnduranceWithDifference(latestTest.endurance_display, preTest?.endurance_display)}</td>
+              </tr>
+            </tbody>
+          </table>
+        `;
+
+        document.getElementById('test-table-container').innerHTML = tableHTML;
+      });
+      {% endif %}
+
       // Profile Dropdown Functions
       function toggleProfileDropdown() {
         const dropdown = document.getElementById("profileDropdown");
@@ -599,6 +1000,18 @@
 
           document.body.appendChild(form);
           form.submit();
+        }
+      }
+
+      function dismissAlert() {
+        const alertBanner = document.getElementById('preTestAlert');
+        if (alertBanner) {
+          alertBanner.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+          alertBanner.style.opacity = '0';
+          alertBanner.style.transform = 'translateY(-10px)';
+          setTimeout(() => {
+            alertBanner.style.display = 'none';
+          }, 300);
         }
       }
 
