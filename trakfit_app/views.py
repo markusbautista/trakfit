@@ -311,7 +311,10 @@ def student_profile_view(request):
         # Build pre-test data
         if pre_test:
             pre_test_data = {
+                'height_cm': float(pre_test.height_cm) if pre_test.height_cm else None,
+                'weight_kg': float(pre_test.weight_kg) if pre_test.weight_kg else None,
                 'bmi': round(pre_test.bmi, 1) if pre_test.bmi else None,
+                'vo2_distance_m': float(pre_test.vo2_distance_m) if pre_test.vo2_distance_m else None,
                 'vo2_max': round(pre_test.vo2_max, 1) if pre_test.vo2_max else None,
                 'flexibility_cm': float(pre_test.flexibility_cm) if pre_test.flexibility_cm else None,
                 'strength_reps': pre_test.strength_reps,
@@ -329,7 +332,10 @@ def student_profile_view(request):
             if current_test_index + 1 < len(all_tests_ordered):
                 previous_test = all_tests_ordered[current_test_index + 1]
                 previous_test_data = {
+                    'height_cm': float(previous_test.height_cm) if previous_test.height_cm else None,
+                    'weight_kg': float(previous_test.weight_kg) if previous_test.weight_kg else None,
                     'bmi': round(previous_test.bmi, 1) if previous_test.bmi else None,
+                    'vo2_distance_m': float(previous_test.vo2_distance_m) if previous_test.vo2_distance_m else None,
                     'vo2_max': round(previous_test.vo2_max, 1) if previous_test.vo2_max else None,
                     'flexibility_cm': float(previous_test.flexibility_cm) if previous_test.flexibility_cm else None,
                     'strength_reps': previous_test.strength_reps,
@@ -645,10 +651,11 @@ def student_history(request):
         if pre_test:
             pre_test_data = {
                 'test_id': pre_test.test_id,
-                'bmi': round(pre_test.bmi, 1) if pre_test.bmi else None,
-                'vo2_max': round(pre_test.vo2_max, 1) if pre_test.vo2_max else None,
                 'height_cm': float(pre_test.height_cm) if pre_test.height_cm else None,
                 'weight_kg': float(pre_test.weight_kg) if pre_test.weight_kg else None,
+                'bmi': round(pre_test.bmi, 1) if pre_test.bmi else None,
+                'vo2_distance_m': float(pre_test.vo2_distance_m) if pre_test.vo2_distance_m else None,
+                'vo2_max': round(pre_test.vo2_max, 1) if pre_test.vo2_max else None,
                 'flexibility_cm': float(pre_test.flexibility_cm) if pre_test.flexibility_cm else None,
                 'strength_reps': pre_test.strength_reps,
                 'agility_sec': float(pre_test.agility_sec) if pre_test.agility_sec else None,
@@ -666,10 +673,11 @@ def student_history(request):
                 previous_test = all_tests_ordered[current_test_index + 1]
                 previous_test_data = {
                     'test_id': previous_test.test_id,
-                    'bmi': round(previous_test.bmi, 1) if previous_test.bmi else None,
-                    'vo2_max': round(previous_test.vo2_max, 1) if previous_test.vo2_max else None,
                     'height_cm': float(previous_test.height_cm) if previous_test.height_cm else None,
                     'weight_kg': float(previous_test.weight_kg) if previous_test.weight_kg else None,
+                    'bmi': round(previous_test.bmi, 1) if previous_test.bmi else None,
+                    'vo2_distance_m': float(previous_test.vo2_distance_m) if previous_test.vo2_distance_m else None,
+                    'vo2_max': round(previous_test.vo2_max, 1) if previous_test.vo2_max else None,
                     'flexibility_cm': float(previous_test.flexibility_cm) if previous_test.flexibility_cm else None,
                     'strength_reps': previous_test.strength_reps,
                     'agility_sec': float(previous_test.agility_sec) if previous_test.agility_sec else None,
@@ -685,10 +693,11 @@ def student_history(request):
             'test_type_key': test.test_type,
             'taken_at': test.taken_at.strftime('%B %d, %Y') if test.taken_at else 'N/A',
             'updated_at': test.updated_at.strftime('%B %d, %Y') if test.updated_at else 'N/A',
-            'bmi': round(test.bmi, 1) if test.bmi else None,
-            'vo2_max': round(test.vo2_max, 1) if test.vo2_max else None,
             'height_cm': float(test.height_cm) if test.height_cm else None,
             'weight_kg': float(test.weight_kg) if test.weight_kg else None,
+            'bmi': round(test.bmi, 1) if test.bmi else None,
+            'vo2_distance_m': float(test.vo2_distance_m) if test.vo2_distance_m else None,
+            'vo2_max': round(test.vo2_max, 1) if test.vo2_max else None,
             'flexibility_cm': float(test.flexibility_cm) if test.flexibility_cm else None,
             'strength_reps': test.strength_reps,
             'agility_sec': float(test.agility_sec) if test.agility_sec else None,
