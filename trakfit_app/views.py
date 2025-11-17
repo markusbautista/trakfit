@@ -16,13 +16,25 @@ def login(request):
             messages.error(request, 'Please enter both email and password.')
             return render(request, 'login.html')
 
-        if email == "admin@trakfit.com" and password == "admin123":
-            return redirect('/teacher-dashboard/')
 
-        # Authenticate user
+        # Authenticate user (primary) - ModelBackend expects `username` param
         user = authenticate(request, username=email, password=password)
-        
+
+        # Fallback: if authenticate returns None, try direct lookup + password check
+        # This helps when a custom auth backend is in use or the backend expects a different kwarg.
+        if user is None:
+            try:
+                potential = User.objects.get(email=email)
+                if potential.check_password(password):
+                    user = potential
+            except User.DoesNotExist:
+                user = None
+
         if user is not None:
+            # Allow admins (superuser or staff) to access teacher dashboard
+            if user.is_superuser or user.is_staff:
+                auth_login(request, user)
+                return redirect('teacher_dashboard')
             # Check if user has a student profile (student-only login)
             if hasattr(user, 'student_profile'):
                 auth_login(request, user)
@@ -458,15 +470,18 @@ def student_post_test_view(request):
 def student_settings_view(request):
     return render(request, 'student/settings.html')
 
+@login_required
 def teacher_dashboard(request):
     return render(request, 'teacher-dashboard.html')
 
+@login_required
 def student_management(request):
     data = {
         'students': Student.objects.all(),
     }
     return render(request, 'student-management.html', data)
 
+@login_required
 def student_profile(request, student_no):
     from .models import FitnessTest
     
