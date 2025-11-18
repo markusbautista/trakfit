@@ -648,7 +648,7 @@ def student_profile(request, student_no):
 
     # Get pre-test (only one per student ever)
     pre_test = student.fitness_tests.filter(test_type='pre').order_by('-taken_at').first()
-    post_test= student.fitness_tests.filter(test_type='post').order_by('-taken_at').last()
+    post_test = student.fitness_tests.filter(test_type='post').order_by('-taken_at').first()
     # Get all tests ordered by date for finding previous test
     all_tests_ordered = list(student.fitness_tests.all().order_by('-taken_at'))
 
