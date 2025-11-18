@@ -457,7 +457,7 @@
         }
 
         .chart-card-title {
-            font-size: 0.75rem;
+            font-size: 0.6rem;
             font-weight: 600;
             color: var(--text-dark);
             margin-bottom: 0.5rem;
@@ -967,20 +967,20 @@
                     <!-- Stats Grid -->
                     <div class="stats-grid">
                         <div class="stat-card">
-                            <div class="stat-number">111</div>
+                            <div class="stat-number">{{ total_students }}</div>
                             <div class="stat-label">Total Students</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-number">10</div>
+                            <div class="stat-number">{{ total_sections }}</div>
                             <div class="stat-label">Total Sections</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-number">+1.5</div>
+                            <div class="stat-number">{{ average.bmi_change|floatformat:1 }}</div>
                             <div class="stat-label">Average BMI Change</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-number">42</div>
-                            <div class="stat-label">Average VO₂ Max (Post-Test)</div>
+                            <div class="stat-number">{{ average.vo2_max.post|floatformat:0 }}</div>
+                            <div class="stat-label">Average VO₂ Max (Post-Test)</div>   
                         </div>
                     </div>
 
@@ -1114,7 +1114,7 @@
                             <h3 class="chart-title">Fitness Component Comparison (Pre-Test vs Latest Post-Test)</h3>
                             <div class="charts-grid">
                                 <div class="chart-card">
-                                    <div class="chart-card-title">Body Mass Index (BMI)</div>
+                                    <div class="chart-card-title">Body Mass Index</div>
                                     <div class="chart-card-canvas">
                                         <canvas id="bmiComparisonChart"></canvas>
                                     </div>
@@ -1348,7 +1348,7 @@
                             if (value === null) {
                                 return label + ': No data';
                             }
-                            return label + ': ' + value + (context.dataset.unit || '');
+                            return value + (context.dataset.unit || '');
                         }
                     }
                 }
@@ -1514,25 +1514,46 @@
                 labels: ['Agility'],
                 datasets: [{
                     label: 'Pre-Test',
-                    data: [5],
+                    data: [60 - 5],
                     backgroundColor: '#4A90A4',
                     borderRadius: 4,
-                    unit: ' sec'
+                    unit: ' sec',
+                    actualValue: 5
                 }, {
                     label: 'Post-Test',
-                    data: [6],
+                    data: [60 - 6],
                     backgroundColor: '#2C3E50',
                     borderRadius: 4,
-                    unit: ' sec'
+                    unit: ' sec',
+                    actualValue: 6
                 }]
             },
             options: {
                 ...commonOptions,
+                plugins: {
+                    ...commonOptions.plugins,
+                    tooltip: {
+                        ...commonOptions.plugins.tooltip,
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.dataset.label || '';
+                                const actualValue = context.dataset.actualValue;
+                                return actualValue + ' sec';
+                            }
+                        }
+                    }
+                },
                 scales: {
                     ...commonOptions.scales,
                     y: {
                         ...commonOptions.scales.y,
-                        max: 60
+                        max: 60,
+                        ticks: {
+                            ...commonOptions.scales.y.ticks,
+                            callback: function(value) {
+                                return (60 - value).toFixed(0);
+                            }
+                        }
                     }
                 }
             }
@@ -1545,25 +1566,46 @@
                 labels: ['Speed'],
                 datasets: [{
                     label: 'Pre-Test',
-                    data: [10],
+                    data: [20 - 10],
                     backgroundColor: '#4A90A4',
                     borderRadius: 4,
-                    unit: ' sec'
+                    unit: ' sec',
+                    actualValue: 10
                 }, {
                     label: 'Post-Test',
-                    data: [7],
+                    data: [20 - 7],
                     backgroundColor: '#2C3E50',
                     borderRadius: 4,
-                    unit: ' sec'
+                    unit: ' sec',
+                    actualValue: 7
                 }]
             },
             options: {
                 ...commonOptions,
+                plugins: {
+                    ...commonOptions.plugins,
+                    tooltip: {
+                        ...commonOptions.plugins.tooltip,
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.dataset.label || '';
+                                const actualValue = context.dataset.actualValue;
+                                return actualValue + ' sec';
+                            }
+                        }
+                    }
+                },
                 scales: {
                     ...commonOptions.scales,
                     y: {
                         ...commonOptions.scales.y,
-                        max: 20
+                        max: 20,
+                        ticks: {
+                            ...commonOptions.scales.y.ticks,
+                            callback: function(value) {
+                                return (20 - value).toFixed(0);
+                            }
+                        }
                     }
                 }
             }
@@ -1576,25 +1618,52 @@
                 labels: ['Endurance'],
                 datasets: [{
                     label: 'Pre-Test',
-                    data: [9],
+                    data: [30 - 9.5], // 9 minutes 30 seconds = 9.5 decimal minutes, inverted
                     backgroundColor: '#4A90A4',
                     borderRadius: 4,
-                    unit: ' min'
+                    unit: ' min',
+                    actualValue: 9.5
                 }, {
                     label: 'Post-Test',
-                    data: [7],
+                    data: [30 - 7.25], // 7 minutes 15 seconds = 7.25 decimal minutes, inverted
                     backgroundColor: '#2C3E50',
                     borderRadius: 4,
-                    unit: ' min'
+                    unit: ' min',
+                    actualValue: 7.25
                 }]
             },
             options: {
                 ...commonOptions,
+                plugins: {
+                    ...commonOptions.plugins,
+                    tooltip: {
+                        ...commonOptions.plugins.tooltip,
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.dataset.label || '';
+                                const actualValue = context.dataset.actualValue;
+                                if (actualValue === null) {
+                                    return label + ': No data';
+                                }
+                                // Convert decimal minutes to mm:ss format
+                                const minutes = Math.floor(actualValue);
+                                const seconds = Math.round((actualValue - minutes) * 60);
+                                return minutes + ':' + (seconds < 10 ? '0' : '') + seconds + ' min';
+                            }
+                        }
+                    }
+                },
                 scales: {
                     ...commonOptions.scales,
                     y: {
                         ...commonOptions.scales.y,
-                        max: 20
+                        max: 30,
+                        ticks: {
+                            ...commonOptions.scales.y.ticks,
+                            callback: function(value) {
+                                return (30 - value).toFixed(1);
+                            }
+                        }
                     }
                 }
             }

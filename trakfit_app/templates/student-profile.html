@@ -14,7 +14,7 @@
             --primary-blue: #4A90A4;
             --sidebar-blue: #3A7CA5;
             --light-blue: #C1DBF0;
-            --card-bg: #FFFFFF;
+            --card-bg: #F3F3F3;
             --text-dark: #2C3E50;
             --text-light: #7F8C8D;
             --border-color: #E5E7EB;
@@ -1133,7 +1133,7 @@
             strength: {{ pre_test.strength_reps|default:"null" }},
             agility: {{ pre_test.agility_sec|floatformat:2|default:"null" }},
             speed: {{ pre_test.speed_sec|floatformat:2|default:"null" }},
-            endurance: {{ pre_test.endurance_minutes|default:"null" }}
+            endurance: {{ pre_endurance_decimal|floatformat:2|default:"null" }}
         };
         
         const postTestData = {
@@ -1143,7 +1143,7 @@
             strength: {{ post_test.strength_reps|default:"null" }},
             agility: {{ post_test.agility_sec|floatformat:2|default:"null" }},
             speed: {{ post_test.speed_sec|floatformat:2|default:"null" }},
-            endurance: {{ post_test.endurance_minutes|default:"null" }}
+            endurance: {{ post_endurance_decimal|floatformat:2|default:"null" }}
         };
 
         // Common chart options
@@ -1163,6 +1163,20 @@
                     }
                 },
                 tooltip: {
+                    position: 'nearest',
+                    yAlign: 'bottom',
+                    padding: 6,
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    titleFont: {
+                        size: 10,
+                        weight: 'bold'
+                    },
+                    bodyFont: {
+                        size: 10
+                    },
+                    footerFont: {
+                        size: 10
+                    },
                     callbacks: {
                         label: function(context) {
                             const label = context.dataset.label || '';
@@ -1170,7 +1184,7 @@
                             if (value === null) {
                                 return label + ': No data';
                             }
-                            return label + ': ' + value + (context.dataset.unit || '');
+                            return value + (context.dataset.unit || '');
                         }
                     }
                 }
@@ -1331,25 +1345,49 @@
                 labels: ['Agility'],
                 datasets: [{
                     label: 'Pre-Test',
-                    data: [preTestData.agility],
+                    data: [preTestData.agility !== null ? 60 - preTestData.agility : null],
                     backgroundColor: '#4A90A4',
                     borderRadius: 4,
-                    unit: ' sec'
+                    unit: ' sec',
+                    actualValue: preTestData.agility
                 }, {
                     label: 'Post-Test',
-                    data: [postTestData.agility],
+                    data: [postTestData.agility !== null ? 60 - postTestData.agility : null],
                     backgroundColor: '#2C3E50',
                     borderRadius: 4,
-                    unit: ' sec'
+                    unit: ' sec',
+                    actualValue: postTestData.agility
                 }]
             },
             options: {
                 ...commonOptions,
+                plugins: {
+                    ...commonOptions.plugins,
+                    tooltip: {
+                        ...commonOptions.plugins.tooltip,
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.dataset.label || '';
+                                const actualValue = context.dataset.actualValue;
+                                if (actualValue === null) {
+                                    return label + ': No data';
+                                }
+                                return actualValue + ' sec';
+                            }
+                        }
+                    }
+                },
                 scales: {
                     ...commonOptions.scales,
                     y: {
                         ...commonOptions.scales.y,
-                        max: 60
+                        max: 60,
+                        ticks: {
+                            ...commonOptions.scales.y.ticks,
+                            callback: function(value) {
+                                return (60 - value).toFixed(0);
+                            }
+                        }
                     }
                 }
             }
@@ -1362,25 +1400,49 @@
                 labels: ['Speed'],
                 datasets: [{
                     label: 'Pre-Test',
-                    data: [preTestData.speed],
+                    data: [preTestData.speed !== null ? 20 - preTestData.speed : null],
                     backgroundColor: '#4A90A4',
                     borderRadius: 4,
-                    unit: ' sec'
+                    unit: ' sec',
+                    actualValue: preTestData.speed
                 }, {
                     label: 'Post-Test',
-                    data: [postTestData.speed],
+                    data: [postTestData.speed !== null ? 20 - postTestData.speed : null],
                     backgroundColor: '#2C3E50',
                     borderRadius: 4,
-                    unit: ' sec'
+                    unit: ' sec',
+                    actualValue: postTestData.speed
                 }]
             },
             options: {
                 ...commonOptions,
+                plugins: {
+                    ...commonOptions.plugins,
+                    tooltip: {
+                        ...commonOptions.plugins.tooltip,
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.dataset.label || '';
+                                const actualValue = context.dataset.actualValue;
+                                if (actualValue === null) {
+                                    return label + ': No data';
+                                }
+                                return actualValue + ' sec';
+                            }
+                        }
+                    }
+                },
                 scales: {
                     ...commonOptions.scales,
                     y: {
                         ...commonOptions.scales.y,
-                        max: 20
+                        max: 20,
+                        ticks: {
+                            ...commonOptions.scales.y.ticks,
+                            callback: function(value) {
+                                return (20 - value).toFixed(0);
+                            }
+                        }
                     }
                 }
             }
@@ -1393,25 +1455,53 @@
                 labels: ['Endurance'],
                 datasets: [{
                     label: 'Pre-Test',
-                    data: [preTestData.endurance],
+                    data: [preTestData.endurance !== null ? 30 - preTestData.endurance : null],
                     backgroundColor: '#4A90A4',
                     borderRadius: 4,
-                    unit: ' min'
+                    unit: ' min',
+                    actualValue: preTestData.endurance
                 }, {
                     label: 'Post-Test',
-                    data: [postTestData.endurance],
+                    data: [postTestData.endurance !== null ? 30 - postTestData.endurance : null],
                     backgroundColor: '#2C3E50',
                     borderRadius: 4,
-                    unit: ' min'
+                    unit: ' min',
+                    actualValue: postTestData.endurance
                 }]
             },
             options: {
                 ...commonOptions,
+                plugins: {
+                    ...commonOptions.plugins,
+                    tooltip: {
+                        ...commonOptions.plugins.tooltip,
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.dataset.label || '';
+                                const actualValue = context.dataset.actualValue;
+                                if (actualValue === null) {
+                                    return label + ': No data';
+                                }
+                                // Convert decimal minutes to mm:ss format
+                                const minutes = Math.floor(actualValue);
+                                const seconds = Math.round((actualValue - minutes) * 60);
+                                return minutes + ':' + String(seconds).padStart(2, '0') + ' min';
+                            }
+                        }
+                    }
+                },
                 scales: {
                     ...commonOptions.scales,
                     y: {
                         ...commonOptions.scales.y,
-                        max: 30
+                        max: 30,
+                        ticks: {
+                            ...commonOptions.scales.y.ticks,
+                            callback: function(value) {
+                                // Show y-axis as inverted decimal minutes (30 at bottom, 0 at top)
+                                return (30 - value).toFixed(1);
+                            }
+                        }
                     }
                 }
             }
