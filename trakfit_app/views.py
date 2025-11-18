@@ -4,7 +4,9 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db import IntegrityError
 from datetime import datetime
-from .models import User, Student
+from django.utils import timezone
+from .models import User, Student, FitnessTest
+from .forms import FitnessTestForm
 
 
 def login(request):
@@ -135,8 +137,13 @@ def register(request):
             
             # Auto-login the user
             auth_login(request, user)
+            
+            # Store registration data in session for pre-test step
+            request.session['registration_complete'] = True
+            request.session['new_user_id'] = user.id
+            
             messages.success(request, 'Registration successful! Welcome to TrakFit.')
-            return redirect('student-dashboard')
+            return redirect('pre-test-register')
             
         except IntegrityError as e:
             messages.error(request, 'An error occurred during registration. Please try again.')
@@ -146,6 +153,76 @@ def register(request):
             return render(request, 'register.html')
     
     return render(request, 'register.html')
+
+def pre_test_register(request):
+    """Handle pre-test submission during registration (optional)"""
+    # Check if user just completed registration
+    if not request.session.get('registration_complete'):
+        # If no registration session, redirect to login
+        return redirect('login')
+    
+    if request.method == 'POST':
+        # Check if user skipped pre-test
+        skip_pretest = request.POST.get('skip_pretest', 'false') == 'true'
+        
+        if skip_pretest:
+            # Clear registration session and redirect to dashboard
+            request.session.pop('registration_complete', None)
+            request.session.pop('new_user_id', None)
+            messages.info(request, 'You can add your pre-test data later from your profile.')
+            return redirect('student-dashboard')
+        
+        # User submitted pre-test data
+        student = request.user.student_profile
+        
+        try:
+            # Extract and validate pre-test fields
+            height_cm = request.POST.get('height_cm', '').strip()
+            weight_kg = request.POST.get('weight_kg', '').strip()
+            vo2_distance_m = request.POST.get('vo2_distance_m', '').strip()
+            flexibility_cm = request.POST.get('flexibility_cm', '').strip()
+            strength_reps = request.POST.get('strength_reps', '').strip()
+            agility_sec = request.POST.get('agility_sec', '').strip()
+            speed_sec = request.POST.get('speed_sec', '').strip()
+            endurance_time = request.POST.get('endurance_time', '').strip()
+            
+            # Validate all fields are provided
+            if not all([height_cm, weight_kg, vo2_distance_m, flexibility_cm, 
+                       strength_reps, agility_sec, speed_sec, endurance_time]):
+                messages.error(request, 'All fields are required for pre-test submission.')
+                return render(request, 'student/pre_test_on_register.html')
+            
+            # Create fitness test
+            fitness_test = FitnessTest.objects.create(
+                student=student,
+                test_type='pre',
+                height_cm=height_cm,
+                weight_kg=weight_kg,
+                vo2_distance_m=vo2_distance_m,
+                flexibility_cm=flexibility_cm,
+                strength_reps=strength_reps,
+                agility_sec=agility_sec,
+                speed_sec=speed_sec,
+                taken_at=timezone.now()
+            )
+            
+            # Parse and set endurance time
+            fitness_test.set_endurance_from_string(endurance_time)
+            fitness_test.save()
+            
+            # Clear registration session
+            request.session.pop('registration_complete', None)
+            request.session.pop('new_user_id', None)
+            
+            messages.success(request, 'Pre-test completed successfully! Welcome to TrakFit.')
+            return redirect('student-dashboard')
+            
+        except Exception as e:
+            messages.error(request, f'Error saving pre-test: {str(e)}')
+            return render(request, 'student/pre_test_on_register.html')
+    
+    # GET request - show pre-test form
+    return render(request, 'student/pre_test_on_register.html')
 
 def resetPassword(request):
     return render(request, 'reset_password.html')
@@ -309,7 +386,10 @@ def student_profile_view(request):
         # Build pre-test data
         if pre_test:
             pre_test_data = {
+                'height_cm': float(pre_test.height_cm) if pre_test.height_cm else None,
+                'weight_kg': float(pre_test.weight_kg) if pre_test.weight_kg else None,
                 'bmi': round(pre_test.bmi, 1) if pre_test.bmi else None,
+                'vo2_distance_m': float(pre_test.vo2_distance_m) if pre_test.vo2_distance_m else None,
                 'vo2_max': round(pre_test.vo2_max, 1) if pre_test.vo2_max else None,
                 'flexibility_cm': float(pre_test.flexibility_cm) if pre_test.flexibility_cm else None,
                 'strength_reps': pre_test.strength_reps,
@@ -327,7 +407,10 @@ def student_profile_view(request):
             if current_test_index + 1 < len(all_tests_ordered):
                 previous_test = all_tests_ordered[current_test_index + 1]
                 previous_test_data = {
+                    'height_cm': float(previous_test.height_cm) if previous_test.height_cm else None,
+                    'weight_kg': float(previous_test.weight_kg) if previous_test.weight_kg else None,
                     'bmi': round(previous_test.bmi, 1) if previous_test.bmi else None,
+                    'vo2_distance_m': float(previous_test.vo2_distance_m) if previous_test.vo2_distance_m else None,
                     'vo2_max': round(previous_test.vo2_max, 1) if previous_test.vo2_max else None,
                     'flexibility_cm': float(previous_test.flexibility_cm) if previous_test.flexibility_cm else None,
                     'strength_reps': previous_test.strength_reps,
@@ -365,49 +448,45 @@ def student_pre_test_view(request):
     from django.utils import timezone
     
     student = request.user.student_profile
+    form = FitnessTestForm()
     
     if request.method == 'POST':
-        test_type = 'pre'  # Force pre test type
+        form = FitnessTestForm(request.POST)
         
-        # Parse form data
-        height_cm = request.POST.get('height_cm')
-        weight_kg = request.POST.get('weight_kg')
-        vo2_distance_m = request.POST.get('vo2_distance_m')
-        flexibility_cm = request.POST.get('flexibility_cm')
-        strength_reps = request.POST.get('strength_reps')
-        agility_sec = request.POST.get('agility_sec')
-        speed_sec = request.POST.get('speed_sec')
-        endurance_time = request.POST.get('endurance_time')  # mm:ss format
-        
-        try:
-            # Create fitness test
-            fitness_test = FitnessTest.objects.create(
-                student=student,
-                test_type=test_type,
-                height_cm=height_cm if height_cm else None,
-                weight_kg=weight_kg if weight_kg else None,
-                vo2_distance_m=vo2_distance_m if vo2_distance_m else None,
-                flexibility_cm=flexibility_cm if flexibility_cm else None,
-                strength_reps=int(strength_reps) if strength_reps else None,
-                agility_sec=agility_sec if agility_sec else None,
-                speed_sec=speed_sec if speed_sec else None,
-                taken_at=timezone.now()
-            )
-            
-            # Parse and set endurance time
-            if endurance_time:
+        if form.is_valid():
+            try:
+                # Create fitness test with validated data
+                fitness_test = FitnessTest.objects.create(
+                    student=student,
+                    test_type='pre',
+                    height_cm=form.cleaned_data['height_cm'],
+                    weight_kg=form.cleaned_data['weight_kg'],
+                    vo2_distance_m=form.cleaned_data['vo2_distance_m'],
+                    flexibility_cm=form.cleaned_data['flexibility_cm'],
+                    strength_reps=form.cleaned_data['strength_reps'],
+                    agility_sec=form.cleaned_data['agility_sec'],
+                    speed_sec=form.cleaned_data['speed_sec'],
+                    taken_at=timezone.now()
+                )
+                
+                # Parse and set endurance time
+                endurance_time = form.cleaned_data['endurance_time']
                 fitness_test.set_endurance_from_string(endurance_time)
                 fitness_test.save()
-            
-            messages.success(request, 'Pre-test saved successfully!')
-            return redirect('student-profile')
-            
-        except Exception as e:
-            messages.error(request, f'Error saving pre-test: {str(e)}')
+                
+                messages.success(request, 'Pre-test saved successfully!')
+                return redirect('student-profile')
+                
+            except Exception as e:
+                messages.error(request, f'Error saving pre-test: {str(e)}')
+        else:
+            # Form validation failed - errors will be displayed in template
+            messages.error(request, 'Please fix the errors below and try again.')
     
     context = {
         'student': student,
         'full_name': f"{student.first_name} {student.last_name}",
+        'form': form,
     }
     return render(request, 'student/pre_test.html', context)
 
@@ -418,50 +497,46 @@ def student_post_test_view(request):
     
     student = request.user.student_profile
     pre_test = student.fitness_tests.filter(test_type='pre').order_by('-taken_at').first()
+    form = FitnessTestForm()
     
     if request.method == 'POST':
-        test_type = 'post'  # Force post test type
+        form = FitnessTestForm(request.POST)
         
-        # Parse form data
-        height_cm = request.POST.get('height_cm')
-        weight_kg = request.POST.get('weight_kg')
-        vo2_distance_m = request.POST.get('vo2_distance_m')
-        flexibility_cm = request.POST.get('flexibility_cm')
-        strength_reps = request.POST.get('strength_reps')
-        agility_sec = request.POST.get('agility_sec')
-        speed_sec = request.POST.get('speed_sec')
-        endurance_time = request.POST.get('endurance_time')  # mm:ss format
-        
-        try:
-            # Create fitness test
-            fitness_test = FitnessTest.objects.create(
-                student=student,
-                test_type=test_type,
-                height_cm=height_cm if height_cm else None,
-                weight_kg=weight_kg if weight_kg else None,
-                vo2_distance_m=vo2_distance_m if vo2_distance_m else None,
-                flexibility_cm=flexibility_cm if flexibility_cm else None,
-                strength_reps=int(strength_reps) if strength_reps else None,
-                agility_sec=agility_sec if agility_sec else None,
-                speed_sec=speed_sec if speed_sec else None,
-                taken_at=timezone.now()
-            )
-            
-            # Parse and set endurance time
-            if endurance_time:
+        if form.is_valid():
+            try:
+                # Create fitness test with validated data
+                fitness_test = FitnessTest.objects.create(
+                    student=student,
+                    test_type='post',
+                    height_cm=form.cleaned_data['height_cm'],
+                    weight_kg=form.cleaned_data['weight_kg'],
+                    vo2_distance_m=form.cleaned_data['vo2_distance_m'],
+                    flexibility_cm=form.cleaned_data['flexibility_cm'],
+                    strength_reps=form.cleaned_data['strength_reps'],
+                    agility_sec=form.cleaned_data['agility_sec'],
+                    speed_sec=form.cleaned_data['speed_sec'],
+                    taken_at=timezone.now()
+                )
+                
+                # Parse and set endurance time
+                endurance_time = form.cleaned_data['endurance_time']
                 fitness_test.set_endurance_from_string(endurance_time)
                 fitness_test.save()
-            
-            messages.success(request, 'Post-test saved successfully!')
-            return redirect('student-profile')
-            
-        except Exception as e:
-            messages.error(request, f'Error saving post-test: {str(e)}')
+                
+                messages.success(request, 'Post-test saved successfully!')
+                return redirect('student-profile')
+                
+            except Exception as e:
+                messages.error(request, f'Error saving post-test: {str(e)}')
+        else:
+            # Form validation failed - errors will be displayed in template
+            messages.error(request, 'Please fix the errors below and try again.')
     
     context = {
         'student': student,
         'pre_test': pre_test,
         'full_name': f"{student.first_name} {student.last_name}",
+        'form': form,
     }
     return render(request, 'student/post_test.html', context)
 
@@ -493,40 +568,49 @@ def update_test_view(request, test_id):
         return redirect('student-history')
 
     if request.method == 'POST':
-        # Parse form data
-        height_cm = request.POST.get('height_cm')
-        weight_kg = request.POST.get('weight_kg')
-        vo2_distance_m = request.POST.get('vo2_distance_m')
-        flexibility_cm = request.POST.get('flexibility_cm')
-        strength_reps = request.POST.get('strength_reps')
-        agility_sec = request.POST.get('agility_sec')
-        speed_sec = request.POST.get('speed_sec')
-        endurance_time = request.POST.get('endurance_time')
+        form = FitnessTestForm(request.POST)
         
-        try:
-            # Update test fields
-            test.height_cm = height_cm if height_cm else None
-            test.weight_kg = weight_kg if weight_kg else None
-            test.vo2_distance_m = vo2_distance_m if vo2_distance_m else None
-            test.flexibility_cm = flexibility_cm if flexibility_cm else None
-            test.strength_reps = int(strength_reps) if strength_reps else None
-            test.agility_sec = agility_sec if agility_sec else None
-            test.speed_sec = speed_sec if speed_sec else None
-            
-            # Update endurance time
-            if endurance_time:
+        if form.is_valid():
+            try:
+                # Update test fields with validated data
+                test.height_cm = form.cleaned_data['height_cm']
+                test.weight_kg = form.cleaned_data['weight_kg']
+                test.vo2_distance_m = form.cleaned_data['vo2_distance_m']
+                test.flexibility_cm = form.cleaned_data['flexibility_cm']
+                test.strength_reps = form.cleaned_data['strength_reps']
+                test.agility_sec = form.cleaned_data['agility_sec']
+                test.speed_sec = form.cleaned_data['speed_sec']
+                
+                # Update endurance time
+                endurance_time = form.cleaned_data['endurance_time']
                 test.set_endurance_from_string(endurance_time)
-            
-            # Save (updated_at will be automatically updated by Django)
-            test.save()
+                
+                # Save (updated_at will be automatically updated by Django)
+                test.save()
 
-            messages.success(request, "Test record updated successfully!")
-            return redirect('student-history')
+                messages.success(request, "Test record updated successfully!")
+                return redirect('student-history')
 
-        except Exception as e:
-            messages.error(request, f"Error updating test: {str(e)}")
+            except Exception as e:
+                messages.error(request, f"Error updating test: {str(e)}")
+        else:
+            # Form validation failed - errors will be displayed in template
+            messages.error(request, 'Please fix the errors below and try again.')
+    else:
+        # GET request - initialize form with existing test data
+        initial_data = {
+            'height_cm': test.height_cm,
+            'weight_kg': test.weight_kg,
+            'vo2_distance_m': test.vo2_distance_m,
+            'flexibility_cm': test.flexibility_cm,
+            'strength_reps': test.strength_reps,
+            'agility_sec': test.agility_sec,
+            'speed_sec': test.speed_sec,
+            'endurance_time': test.get_endurance_display(),
+        }
+        form = FitnessTestForm(initial=initial_data)
 
-    # GET request - get pre-test for comparison
+    # Get pre-test for comparison
     pre_test = student.fitness_tests.filter(test_type='pre').order_by('-taken_at').first()
     
     # Render the form with existing values
@@ -535,6 +619,7 @@ def update_test_view(request, test_id):
         'test': test,
         'pre_test': pre_test,
         'full_name': f"{student.first_name} {student.last_name}",
+        'form': form,
     }
     return render(request, 'student/update_test.html', context)
 
@@ -749,10 +834,11 @@ def student_history(request):
         if pre_test:
             pre_test_data = {
                 'test_id': pre_test.test_id,
-                'bmi': round(pre_test.bmi, 1) if pre_test.bmi else None,
-                'vo2_max': round(pre_test.vo2_max, 1) if pre_test.vo2_max else None,
                 'height_cm': float(pre_test.height_cm) if pre_test.height_cm else None,
                 'weight_kg': float(pre_test.weight_kg) if pre_test.weight_kg else None,
+                'bmi': round(pre_test.bmi, 1) if pre_test.bmi else None,
+                'vo2_distance_m': float(pre_test.vo2_distance_m) if pre_test.vo2_distance_m else None,
+                'vo2_max': round(pre_test.vo2_max, 1) if pre_test.vo2_max else None,
                 'flexibility_cm': float(pre_test.flexibility_cm) if pre_test.flexibility_cm else None,
                 'strength_reps': pre_test.strength_reps,
                 'agility_sec': float(pre_test.agility_sec) if pre_test.agility_sec else None,
@@ -770,10 +856,11 @@ def student_history(request):
                 previous_test = all_tests_ordered[current_test_index + 1]
                 previous_test_data = {
                     'test_id': previous_test.test_id,
-                    'bmi': round(previous_test.bmi, 1) if previous_test.bmi else None,
-                    'vo2_max': round(previous_test.vo2_max, 1) if previous_test.vo2_max else None,
                     'height_cm': float(previous_test.height_cm) if previous_test.height_cm else None,
                     'weight_kg': float(previous_test.weight_kg) if previous_test.weight_kg else None,
+                    'bmi': round(previous_test.bmi, 1) if previous_test.bmi else None,
+                    'vo2_distance_m': float(previous_test.vo2_distance_m) if previous_test.vo2_distance_m else None,
+                    'vo2_max': round(previous_test.vo2_max, 1) if previous_test.vo2_max else None,
                     'flexibility_cm': float(previous_test.flexibility_cm) if previous_test.flexibility_cm else None,
                     'strength_reps': previous_test.strength_reps,
                     'agility_sec': float(previous_test.agility_sec) if previous_test.agility_sec else None,
@@ -789,10 +876,11 @@ def student_history(request):
             'test_type_key': test.test_type,
             'taken_at': test.taken_at.strftime('%B %d, %Y') if test.taken_at else 'N/A',
             'updated_at': test.updated_at.strftime('%B %d, %Y') if test.updated_at else 'N/A',
-            'bmi': round(test.bmi, 1) if test.bmi else None,
-            'vo2_max': round(test.vo2_max, 1) if test.vo2_max else None,
             'height_cm': float(test.height_cm) if test.height_cm else None,
             'weight_kg': float(test.weight_kg) if test.weight_kg else None,
+            'bmi': round(test.bmi, 1) if test.bmi else None,
+            'vo2_distance_m': float(test.vo2_distance_m) if test.vo2_distance_m else None,
+            'vo2_max': round(test.vo2_max, 1) if test.vo2_max else None,
             'flexibility_cm': float(test.flexibility_cm) if test.flexibility_cm else None,
             'strength_reps': test.strength_reps,
             'agility_sec': float(test.agility_sec) if test.agility_sec else None,

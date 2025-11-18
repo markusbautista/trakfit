@@ -960,10 +960,28 @@
                 </thead>
                 <tbody>
                   <tr>
+                    <td class="component-name">Height</td>
+                    <td class="current-test-col">${formatValue(test.height_cm, 'cm')}</td>
+                    <td class="previous-test-col">${isPreTest ? 'N/A' : formatWithDifference(test.height_cm, test.previous_test?.height_cm, 'cm', false)}</td>
+                    <td>${formatWithDifference(test.height_cm, test.pre_test?.height_cm, 'cm', false)}</td>
+                  </tr>
+                  <tr>
+                    <td class="component-name">Weight</td>
+                    <td class="current-test-col">${formatValue(test.weight_kg, 'kg')}</td>
+                    <td class="previous-test-col">${isPreTest ? 'N/A' : formatWithDifference(test.weight_kg, test.previous_test?.weight_kg, 'kg', true)}</td>
+                    <td>${formatWithDifference(test.weight_kg, test.pre_test?.weight_kg, 'kg', true)}</td>
+                  </tr>
+                  <tr>
                     <td class="component-name">Body Mass Index (BMI)</td>
                     <td class="current-test-col">${formatValue(test.bmi)}</td>
                     <td class="previous-test-col">${isPreTest ? 'N/A' : formatWithDifference(test.bmi, test.previous_test?.bmi, '', true)}</td>
                     <td>${formatWithDifference(test.bmi, test.pre_test?.bmi, '', true)}</td>
+                  </tr>
+                  <tr>
+                    <td class="component-name">VO<sub>2</sub> Distance</td>
+                    <td class="current-test-col">${formatValue(test.vo2_distance_m, 'm')}</td>
+                    <td class="previous-test-col">${isPreTest ? 'N/A' : formatWithDifference(test.vo2_distance_m, test.previous_test?.vo2_distance_m, 'm', false)}</td>
+                    <td>${formatWithDifference(test.vo2_distance_m, test.pre_test?.vo2_distance_m, 'm', false)}</td>
                   </tr>
                   <tr>
                     <td class="component-name">VO<sub>2</sub> Max</td>

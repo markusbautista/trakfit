@@ -105,7 +105,10 @@
         font-family: "Sarabun", sans-serif;
         font-style: italic;
         font-weight: 500;
-        margin-top: 5px;
+        display: inline-block;
+        width: fit-content;
+        min-width: 80px;
+        text-align: center;
       }
 
       .save-btn {
@@ -274,6 +277,13 @@
 
       .input-with-prevalue {
         position: relative;
+      }
+
+      .label-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.5rem;
       }
 
       /* Validation styles */
@@ -501,14 +511,18 @@
 
             <div class="row mb-4">
               <div class="col-md-6">
-                <label class="form-label">Height</label>
+                <div class="label-row">
+                  <label class="form-label mb-0">Height</label>
+                  <div class="pre-value-badge">Pre : {% if pre_test and pre_test.height_cm %}{{ pre_test.height_cm|floatformat:1 }}{% else %}N/A{% endif %}</div>
+                </div>
                 <div class="input-with-prevalue">
                   <div class="position-relative">
                     <input
                       type="text"
-                      class="form-control form-input"
+                      class="form-control form-input {% if form.height_cm.errors %}invalid{% endif %}"
                       name="height_cm"
                       placeholder="Enter value..."
+                      value="{{ form.height_cm.value|default:'' }}"
                     />
                     <div
                       class="position-absolute top-50 end-0 translate-middle-y me-3"
@@ -516,18 +530,24 @@
                       <span class="unit-badge">cm</span>
                     </div>
                   </div>
-                  <div class="pre-value-badge">Pre : 170</div>
+                  {% if form.height_cm.errors %}
+                    <div class="error-message show">{{ form.height_cm.errors.0 }}</div>
+                  {% endif %}
                 </div>
               </div>
               <div class="col-md-6">
-                <label class="form-label">Weight</label>
+                <div class="label-row">
+                  <label class="form-label mb-0">Weight</label>
+                  <div class="pre-value-badge">Pre : {% if pre_test and pre_test.weight_kg %}{{ pre_test.weight_kg|floatformat:1 }}{% else %}N/A{% endif %}</div>
+                </div>
                 <div class="input-with-prevalue">
                   <div class="position-relative">
                     <input
                       type="text"
-                      class="form-control form-input"
+                      class="form-control form-input {% if form.weight_kg.errors %}invalid{% endif %}"
                       name="weight_kg"
                       placeholder="Enter value..."
+                      value="{{ form.weight_kg.value|default:'' }}"
                     />
                     <div
                       class="position-absolute top-50 end-0 translate-middle-y me-3"
@@ -535,14 +555,19 @@
                       <span class="unit-badge">kg</span>
                     </div>
                   </div>
-                  <div class="pre-value-badge">Pre : 65</div>
+                  {% if form.weight_kg.errors %}
+                    <div class="error-message show">{{ form.weight_kg.errors.0 }}</div>
+                  {% endif %}
                 </div>
               </div>
             </div>
 
             <div class="row">
               <div class="col-12">
-                <label class="form-label">BMI (auto)</label>
+                <div class="label-row">
+                  <label class="form-label mb-0">BMI (auto)</label>
+                  <div class="pre-value-badge">Pre : {% if pre_test and pre_test.bmi %}{{ pre_test.bmi|floatformat:2 }}{% else %}N/A{% endif %}</div>
+                </div>
                 <div class="input-with-prevalue">
                   <input
                     type="text"
@@ -550,7 +575,6 @@
                     placeholder="Auto"
                     readonly
                   />
-                  <div class="pre-value-badge">Pre : 22.5</div>
                 </div>
               </div>
             </div>
@@ -564,14 +588,18 @@
 
             <div class="row mb-4">
               <div class="col-md-6">
-                <label class="form-label">Distance Covered</label>
+                <div class="label-row">
+                  <label class="form-label mb-0">Distance Covered</label>
+                  <div class="pre-value-badge">Pre : {% if pre_test and pre_test.vo2_distance_m %}{{ pre_test.vo2_distance_m|floatformat:1 }}{% else %}N/A{% endif %}</div>
+                </div>
                 <div class="input-with-prevalue">
                   <div class="position-relative">
                     <input
                       type="text"
-                      class="form-control form-input"
+                      class="form-control form-input {% if form.vo2_distance_m.errors %}invalid{% endif %}"
                       name="vo2_distance_m"
                       placeholder="Enter value..."
+                      value="{{ form.vo2_distance_m.value|default:'' }}"
                     />
                     <div
                       class="position-absolute top-50 end-0 translate-middle-y me-3"
@@ -579,11 +607,16 @@
                       <span class="unit-badge">m</span>
                     </div>
                   </div>
-                  <div class="pre-value-badge">Pre : 2200</div>
+                  {% if form.vo2_distance_m.errors %}
+                    <div class="error-message show">{{ form.vo2_distance_m.errors.0 }}</div>
+                  {% endif %}
                 </div>
               </div>
               <div class="col-md-6">
-                <label class="form-label">VO<sub>2</sub> Max (computed)</label>
+                <div class="label-row">
+                  <label class="form-label mb-0">VO<sub>2</sub> Max (computed)</label>
+                  <div class="pre-value-badge">Pre : {% if pre_test and pre_test.vo2_max %}{{ pre_test.vo2_max|floatformat:2 }}{% else %}N/A{% endif %}</div>
+                </div>
                 <div class="input-with-prevalue">
                   <div class="position-relative">
                     <input
@@ -599,7 +632,6 @@
                       <span class="unit-badge">ml/kg/min</span>
                     </div>
                   </div>
-                  <div class="pre-value-badge">Pre : 42.1</div>
                 </div>
               </div>
             </div>
@@ -611,14 +643,18 @@
 
             <div class="row mb-4">
               <div class="col-md-6">
-                <label class="form-label">Flexibility</label>
+                <div class="label-row">
+                  <label class="form-label mb-0">Flexibility</label>
+                  <div class="pre-value-badge">Pre : {% if pre_test and pre_test.flexibility_cm %}{{ pre_test.flexibility_cm|floatformat:1 }}{% else %}N/A{% endif %}</div>
+                </div>
                 <div class="input-with-prevalue">
                   <div class="position-relative">
                     <input
                       type="text"
-                      class="form-control form-input"
+                      class="form-control form-input {% if form.flexibility_cm.errors %}invalid{% endif %}"
                       name="flexibility_cm"
                       placeholder="Enter value..."
+                      value="{{ form.flexibility_cm.value|default:'' }}"
                     />
                     <div
                       class="position-absolute top-50 end-0 translate-middle-y me-3"
@@ -626,18 +662,24 @@
                       <span class="unit-badge">cm</span>
                     </div>
                   </div>
-                  <div class="pre-value-badge">Pre : 25</div>
+                  {% if form.flexibility_cm.errors %}
+                    <div class="error-message show">{{ form.flexibility_cm.errors.0 }}</div>
+                  {% endif %}
                 </div>
               </div>
               <div class="col-md-6">
-                <label class="form-label">Strength (push-ups)</label>
+                <div class="label-row">
+                  <label class="form-label mb-0">Strength (push-ups)</label>
+                  <div class="pre-value-badge">Pre : {% if pre_test and pre_test.strength_reps %}{{ pre_test.strength_reps }}{% else %}N/A{% endif %}</div>
+                </div>
                 <div class="input-with-prevalue">
                   <div class="position-relative">
                     <input
                       type="text"
-                      class="form-control form-input"
+                      class="form-control form-input {% if form.strength_reps.errors %}invalid{% endif %}"
                       name="strength_reps"
                       placeholder="Enter value..."
+                      value="{{ form.strength_reps.value|default:'' }}"
                     />
                     <div
                       class="position-absolute top-50 end-0 translate-middle-y me-3"
@@ -645,21 +687,27 @@
                       <span class="unit-badge">reps</span>
                     </div>
                   </div>
-                  <div class="pre-value-badge">Pre : 30</div>
+                  {% if form.strength_reps.errors %}
+                    <div class="error-message show">{{ form.strength_reps.errors.0 }}</div>
+                  {% endif %}
                 </div>
               </div>
             </div>
 
             <div class="row mb-4">
               <div class="col-md-6">
-                <label class="form-label">Agility Test</label>
+                <div class="label-row">
+                  <label class="form-label mb-0">Agility Test</label>
+                  <div class="pre-value-badge">Pre : {% if pre_test and pre_test.agility_sec %}{{ pre_test.agility_sec|floatformat:2 }}{% else %}N/A{% endif %}</div>
+                </div>
                 <div class="input-with-prevalue">
                   <div class="position-relative">
                     <input
                       type="text"
-                      class="form-control form-input"
+                      class="form-control form-input {% if form.agility_sec.errors %}invalid{% endif %}"
                       name="agility_sec"
                       placeholder="Enter value..."
+                      value="{{ form.agility_sec.value|default:'' }}"
                     />
                     <div
                       class="position-absolute top-50 end-0 translate-middle-y me-3"
@@ -667,18 +715,24 @@
                       <span class="unit-badge">sec</span>
                     </div>
                   </div>
-                  <div class="pre-value-badge">Pre : 12.8</div>
+                  {% if form.agility_sec.errors %}
+                    <div class="error-message show">{{ form.agility_sec.errors.0 }}</div>
+                  {% endif %}
                 </div>
               </div>
               <div class="col-md-6">
-                <label class="form-label">Speed (40m)</label>
+                <div class="label-row">
+                  <label class="form-label mb-0">Speed (40m)</label>
+                  <div class="pre-value-badge">Pre : {% if pre_test and pre_test.speed_sec %}{{ pre_test.speed_sec|floatformat:2 }}{% else %}N/A{% endif %}</div>
+                </div>
                 <div class="input-with-prevalue">
                   <div class="position-relative">
                     <input
                       type="text"
-                      class="form-control form-input"
+                      class="form-control form-input {% if form.speed_sec.errors %}invalid{% endif %}"
                       name="speed_sec"
                       placeholder="Enter value..."
+                      value="{{ form.speed_sec.value|default:'' }}"
                     />
                     <div
                       class="position-absolute top-50 end-0 translate-middle-y me-3"
@@ -686,21 +740,27 @@
                       <span class="unit-badge">sec</span>
                     </div>
                   </div>
-                  <div class="pre-value-badge">Pre : 14.6</div>
+                  {% if form.speed_sec.errors %}
+                    <div class="error-message show">{{ form.speed_sec.errors.0 }}</div>
+                  {% endif %}
                 </div>
               </div>
             </div>
 
             <div class="row">
               <div class="col-12">
-                <label class="form-label">Endurance (1.5km)</label>
+                <div class="label-row">
+                  <label class="form-label mb-0">Endurance (1.5km)</label>
+                  <div class="pre-value-badge">Pre : {% if pre_test and pre_test.get_endurance_display %}{{ pre_test.get_endurance_display }}{% else %}N/A{% endif %}</div>
+                </div>
                 <div class="input-with-prevalue">
                   <div class="position-relative">
                     <input
                       type="text"
-                      class="form-control form-input"
+                      class="form-control form-input {% if form.endurance_time.errors %}invalid{% endif %}"
                       name="endurance_time"
                       placeholder="mm:ss (e.g., 12:30)"
+                      value="{{ form.endurance_time.value|default:'' }}"
                     />
                     <div
                       class="position-absolute top-50 end-0 translate-middle-y me-3"
@@ -708,7 +768,9 @@
                       <span class="unit-badge">mm : ss</span>
                     </div>
                   </div>
-                  <div class="pre-value-badge">Pre : 03 : 45</div>
+                  {% if form.endurance_time.errors %}
+                    <div class="error-message show">{{ form.endurance_time.errors.0 }}</div>
+                  {% endif %}
                 </div>
               </div>
             </div>

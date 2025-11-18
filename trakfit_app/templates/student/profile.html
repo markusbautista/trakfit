@@ -816,7 +816,10 @@
       document.addEventListener('DOMContentLoaded', function() {
         const latestTest = {
           test_type_key: '{{ latest_test.test_type }}',
+          height_cm: {{ latest_test.height_cm|default:'null' }},
+          weight_kg: {{ latest_test.weight_kg|default:'null' }},
           bmi: {{ latest_test.bmi|default:'null' }},
+          vo2_distance_m: {{ latest_test.vo2_distance_m|default:'null' }},
           vo2_max: {{ latest_test.vo2_max|default:'null' }},
           flexibility_cm: {{ latest_test.flexibility_cm|default:'null' }},
           strength_reps: {{ latest_test.strength_reps|default:'null' }},
@@ -903,10 +906,28 @@
             </thead>
             <tbody>
               <tr>
+                <td class="component-name">Height</td>
+                <td class="current-test-col">${formatValue(latestTest.height_cm, 'cm')}</td>
+                <td>${isPreTest ? 'N/A' : formatWithDifference(latestTest.height_cm, previousTest?.height_cm, 'cm', false)}</td>
+                <td>${formatWithDifference(latestTest.height_cm, preTest?.height_cm, 'cm', false)}</td>
+              </tr>
+              <tr>
+                <td class="component-name">Weight</td>
+                <td class="current-test-col">${formatValue(latestTest.weight_kg, 'kg')}</td>
+                <td>${isPreTest ? 'N/A' : formatWithDifference(latestTest.weight_kg, previousTest?.weight_kg, 'kg', true)}</td>
+                <td>${formatWithDifference(latestTest.weight_kg, preTest?.weight_kg, 'kg', true)}</td>
+              </tr>
+              <tr>
                 <td class="component-name">Body Mass Index (BMI)</td>
                 <td class="current-test-col">${formatValue(latestTest.bmi)}</td>
                 <td>${isPreTest ? 'N/A' : formatWithDifference(latestTest.bmi, previousTest?.bmi, '', true)}</td>
                 <td>${formatWithDifference(latestTest.bmi, preTest?.bmi, '', true)}</td>
+              </tr>
+              <tr>
+                <td class="component-name">VO<sub>2</sub> Distance</td>
+                <td class="current-test-col">${formatValue(latestTest.vo2_distance_m, 'm')}</td>
+                <td>${isPreTest ? 'N/A' : formatWithDifference(latestTest.vo2_distance_m, previousTest?.vo2_distance_m, 'm', false)}</td>
+                <td>${formatWithDifference(latestTest.vo2_distance_m, preTest?.vo2_distance_m, 'm', false)}</td>
               </tr>
               <tr>
                 <td class="component-name">VO<sub>2</sub> Max</td>
